@@ -1,10 +1,11 @@
 import { Routes, Route } from 'react-router-dom'
 import Home from './views/Home' 
+import Navbar from './components/Navbar'
 
 function App() {
   return (
     <>
-      {/* Acá irá el Navbar más adelante */}
+      <Navbar></Navbar>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />

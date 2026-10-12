@@ -6,26 +6,30 @@ const HomeBanner = () => {
     const [featuredProduct, setFeaturedProduct] = useState(null);
 
     useEffect(() => {
-        // Hacemos el GET al backend para traer un producto destacado (el primero de la BD)
-        const fetchFeaturedProduct = async () => {
-            try {
-                // Llamamos a tu ProductsController, pidiendo 1 solo producto
-                const response = await fetch('http://localhost:8080/products?page=0&size=1');
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.content && data.content.length > 0) {
-                        setFeaturedProduct(data.content[0]);
-                    }
-                }
-            } catch (error) {
-                console.error("Error al cargar el producto para el banner:", error);
-            }
-        };
+        fetch('http://localhost:8080/products?page=0&size=1')
+        .then((response) => response.json())
+        .then((data)=>{setFeaturedProduct(data)})
+        .catch((error)=>{console.error("Error al mostrar la publicacion inicial: ", error)})
+        // // Hacemos el GET al backend para traer un producto destacado (el primero de la BD)
+        // const fetchFeaturedProduct = async () => {
+        //     try {
+        //         // Llamamos a ProductsController, pidiendo 1 solo producto
+        //         const response = await fetch('http://localhost:8080/products?page=0&size=1');
+        //         if (response.ok) {
+        //             const data = await response.json();
+        //             if (data.content && data.content.length > 0) {
+        //                 setFeaturedProduct(data.content[0]);
+        //             }
+        //         }
+        //     } catch (error) {
+        //         console.error("Error al cargar el producto para el banner:", error);
+        //     }
+        // };
 
-        fetchFeaturedProduct();
+        // fetchFeaturedProduct();
     }, []); // Array vacío para que se ejecute solo en el montaje
 
-    // Armamos la URL de la imagen nativa usando tu ImageController
+    // Armamos la URL de la imagen nativa usando ImageController
     // Si el producto no tiene imagen, se puede poner la silueta del boceto de fallback
     const imageUrl = featuredProduct && featuredProduct.imageIds && featuredProduct.imageIds.length > 0 
         ? `http://localhost:8080/images/view/${featuredProduct.imageIds[0]}`

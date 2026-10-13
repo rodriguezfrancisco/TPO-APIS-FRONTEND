@@ -1,0 +1,128 @@
+.catalog-wrapper {
+    padding: 2em;
+    background-color: black;
+    color: white;
+    min-height: 70vh;
+    font-size: 1rem;
+}
+
+.catalog-container {
+    max-width: 80em;
+    margin: 0 auto;
+}
+
+.catalog-title {
+    display: inline-block;
+    margin-bottom: 1em;
+    padding: 0.2em 0.6em;
+    background-color: white;
+    color: black;
+    font-size: 2.2em;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    transform: skewX(-6deg);
+}
+
+.catalog-filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1em;
+    margin-bottom: 1.5em;
+}
+
+.catalog-search {
+    display: flex;
+    gap: 0.5em;
+}
+
+.catalog-search .catalog-field {
+    flex: 1;
+}
+
+.catalog-field {
+    padding: 0.8em 1em;
+    border: 0.15em solid white;
+    background-color: black;
+    color: white;
+    font-weight: 700;
+    min-width: 0;
+}
+
+.catalog-field::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.catalog-field:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+.catalog-message {
+    padding: 2.5em 1em;
+    border: 0.2em dashed white;
+    text-align: center;
+    font-weight: 700;
+}
+
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+    gap: 1.5em;
+}
+
+.catalog-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5em;
+    margin-top: 2.5em;
+}
+
+.catalog-page-info {
+    font-weight: 900;
+}
+
+.catalog-page-btn {
+    padding: 0.6em 1.2em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.catalog-page-btn:hover:not(:disabled) {
+    background-color: black;
+    color: white;
+}
+
+.catalog-page-btn:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+.catalog-page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+@media (max-width: 40em) {
+    .catalog-wrapper {
+        padding: 1em;
+    }
+
+    .catalog-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .catalog-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1em;
+    }
+
+    .catalog-title {
+        font-size: 1.6em;
+    }
+}

@@ -54,12 +54,7 @@ const ProductCard = ({ product, onAdd }) => {
                 </div>
                 {/* Botón de agregar: solo aparece si el componente padre le pasa onAdd */}
                 {onAdd && (
-                    <button
-                        type="button"
-                        className="card-btn"
-                        disabled={soldOut}
-                        onClick={() => onAdd(product)}
-                    >
+                    <button type="button" className="card-btn" disabled={soldOut} onClick={() => onAdd(product)}>
                         {soldOut ? 'Agotada' : 'Agregar'}
                     </button>
                 )}

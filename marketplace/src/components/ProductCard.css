@@ -1,0 +1,157 @@
+/* Tarjeta de producto: borde blanco sobre fondo negro */
+.product-card {
+    display: flex;
+    flex-direction: column;
+    background-color: black;
+    color: white;
+    border: 0.2em solid white;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Al pasar el mouse la tarjeta se levanta con sombra dura estilo cómic */
+.product-card:hover {
+    transform: translate(-0.2em, -0.2em);
+    box-shadow: 0.4em 0.4em 0 white;
+}
+
+/* Caja cuadrada de la imagen */
+.card-image-box {
+    position: relative; /* Para ubicar las etiquetas sobre la imagen */
+    aspect-ratio: 1 / 1;
+    border-bottom: 0.2em solid white;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Efecto de Screentone (puntos de manga) */
+.halftone-card {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.25) 15%, transparent 16%);
+    background-size: 0.4em 0.4em;
+    background-position: 0 0, 0.2em 0.2em;
+}
+
+/* La imagen entra completa sin deformarse */
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Silueta de reemplazo (si el producto no tiene imagen) */
+.card-placeholder {
+    width: 55%;
+    aspect-ratio: 1 / 1;
+    border: 0.2em solid white;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5em;
+    font-weight: 900;
+}
+
+/* Etiqueta "Agotada" arriba a la izquierda de la imagen */
+.card-sold-out {
+    position: absolute;
+    top: 0.6em;
+    left: 0.6em;
+    padding: 0.2em 0.6em;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    font-size: 0.85em;
+    text-transform: uppercase;
+}
+
+/* Etiqueta del descuento arriba a la derecha de la imagen */
+.card-discount {
+    position: absolute;
+    top: 0.6em;
+    right: 0.6em;
+    padding: 0.2em 0.6em;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    font-size: 0.95em;
+    transform: skewX(-6deg);
+}
+
+/* Zona de datos debajo de la imagen */
+.card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+    padding: 1em;
+    flex: 1;
+}
+
+/* Nombre de la categoría en chico */
+.card-category {
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+}
+
+/* Nombre del producto */
+.card-name {
+    font-size: 1.05em;
+    font-weight: 900;
+    line-height: 1.25;
+    min-height: 2.5em; /* Reserva 2 líneas para que todas las tarjetas queden alineadas */
+}
+
+/* Contenedor de precios: se empuja hacia abajo para alinear con el botón */
+.card-price-box {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2em 0.6em;
+}
+
+/* Precio original tachado (solo cuando hay descuento) */
+.card-price-old {
+    font-size: 0.95em;
+    font-weight: 700;
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+/* Precio final */
+.card-price {
+    font-size: 1.4em;
+    font-weight: 900;
+}
+
+/* Botón de agregar */
+.card-btn {
+    padding: 0.6em 1em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Al pasar el mouse se invierten los colores */
+.card-btn:hover:not(:disabled) {
+    background-color: black;
+    color: white;
+}
+
+/* Contorno visible al navegar con el teclado */
+.card-btn:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+/* Botón deshabilitado (producto agotado) */
+.card-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

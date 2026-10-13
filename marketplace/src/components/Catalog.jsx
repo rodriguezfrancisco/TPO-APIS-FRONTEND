@@ -56,11 +56,11 @@ const Catalog = () => {
     // Ordenamos por precio solo los productos de la página actual
     // Sin orden elegido se muestran como los manda el backend
     let visibleProducts = products;
-    if (sort === 'asc') {
-        visibleProducts = [...products].sort((a, b) => a.price - b.price);
+     if (sort === 'asc') {
+        visibleProducts = [...products].sort((a, b) => a.finalPrice - b.finalPrice);
     }
-    if (sort === 'desc') {
-        visibleProducts = [...products].sort((a, b) => b.price - a.price);
+     if (sort === 'desc') {
+        visibleProducts = [...products].sort((a, b) => b.finalPrice - a.finalPrice);
     }
 
     // Se ejecuta al buscar (con Enter o con el botón)

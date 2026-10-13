@@ -1,4 +1,4 @@
-import Catalog from "../Components/Catalog";
+import Catalog from "../components/Catalog";
 
 function Products() {
   return(

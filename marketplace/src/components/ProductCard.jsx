@@ -27,12 +27,7 @@ const ProductCard = ({ product, onAdd }) => {
             {/* 1. Imagen (o la silueta ゴ si el producto no tiene) */}
             <div className="card-image-box halftone-card">
                 {hasImage ? (
-                    <img
-                        src={`${IMAGE_URL}${product.imageIds[0]}`}
-                        alt={product.name}
-                        className="card-image"
-                        loading="lazy"
-                    />
+                    <img src={`${IMAGE_URL}${product.imageIds[0]}`} alt={product.name} className="card-image" loading="lazy"/>
                 ) : (
                     <div className="card-placeholder">
                         <span>ゴ</span>

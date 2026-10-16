@@ -1,0 +1,281 @@
+/* Contenedor envolvente con el fondo negro y el padding exterior */
+.detail-wrapper {
+    padding: 2em;
+    background-color: black;
+    color: white;
+    min-height: 70vh; /* Para que la página no se achique mientras carga */
+    font-size: 1rem; /* Base para em, se ajusta con Media Queries */
+}
+
+/* Contenedor central: limita el ancho en pantallas grandes */
+.detail-container {
+    max-width: 70em;
+    margin: 0 auto;
+}
+
+/* Link para volver al catálogo */
+.detail-back {
+    display: inline-block;
+    margin-bottom: 1.5em;
+    padding: 0.4em 0.8em;
+    border: 0.15em solid white;
+    color: white;
+    font-size: 0.9em;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Al pasar el mouse se invierten los colores */
+.detail-back:hover {
+    background-color: white;
+    color: black;
+}
+
+/* Contorno visible al navegar con el teclado */
+.detail-back:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+/* Mensajes de estado (cargando, error y producto inexistente) con borde punteado */
+.detail-message {
+    padding: 2.5em 1em;
+    border: 0.2em dashed white;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* Dos columnas: galería a la izquierda y datos a la derecha */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5em;
+    align-items: start;
+}
+
+/* Galería: imagen grande con las miniaturas debajo */
+.detail-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+/* Caja cuadrada de la imagen grande */
+.detail-image-box {
+    position: relative; /* Para ubicar las etiquetas sobre la imagen */
+    aspect-ratio: 1 / 1;
+    border: 0.2em solid white;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Efecto de Screentone (puntos de manga) */
+.halftone-detail {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.25) 15%, transparent 16%);
+    background-size: 0.4em 0.4em;
+    background-position: 0 0, 0.2em 0.2em;
+}
+
+/* La imagen entra completa sin deformarse */
+.detail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Silueta de reemplazo (si el producto no tiene imagen) */
+.detail-placeholder {
+    width: 45%;
+    aspect-ratio: 1 / 1;
+    border: 0.2em solid white;
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5em;
+    font-weight: 900;
+}
+
+/* Etiqueta "Agotada" arriba a la izquierda de la imagen */
+.detail-sold-out {
+    position: absolute;
+    top: 0.8em;
+    left: 0.8em;
+    padding: 0.2em 0.6em;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+/* Etiqueta del descuento arriba a la derecha de la imagen */
+.detail-discount {
+    position: absolute;
+    top: 0.8em;
+    right: 0.8em;
+    padding: 0.2em 0.6em;
+    background-color: white;
+    color: black;
+    font-size: 1.1em;
+    font-weight: 900;
+}
+
+/* Fila de miniaturas */
+.detail-thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8em;
+}
+
+/* Miniatura: apagada hasta que se elige */
+.detail-thumb {
+    width: 4.5em;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    border: 0.15em solid white;
+    background-color: black;
+    opacity: 0.6;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+}
+
+.detail-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Miniatura elegida: se ve completa y con sombra dura estilo cómic */
+.detail-thumb.active,
+.detail-thumb:hover {
+    opacity: 1;
+}
+
+.detail-thumb.active {
+    box-shadow: 0.2em 0.2em 0 white;
+}
+
+/* Contorno visible al navegar con el teclado */
+.detail-thumb:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+/* Columna de datos */
+.detail-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+/* Nombre de la categoría en chico */
+.detail-category {
+    font-size: 0.8em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+}
+
+/* Nombre del producto */
+.detail-name {
+    font-size: 2.2em;
+    font-weight: 900;
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+/* Contenedor de precios */
+.detail-price-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2em 0.8em;
+}
+
+/* Precio original tachado (solo cuando hay descuento) */
+.detail-price-old {
+    font-size: 1.2em;
+    font-weight: 700;
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+/* Precio final */
+.detail-price {
+    font-size: 2.2em;
+    font-weight: 900;
+}
+
+/* Stock disponible */
+.detail-stock {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Descripción del producto */
+.detail-description {
+    padding-top: 1em;
+    border-top: 0.15em solid white;
+    line-height: 1.6;
+    white-space: pre-line; /* Respeta los saltos de línea de la descripción */
+}
+
+/* Vendedor */
+.detail-seller {
+    font-size: 0.9em;
+    opacity: 0.7;
+}
+
+/* Botón de agregar al carrito */
+.detail-btn {
+    margin-top: 0.5em;
+    padding: 0.9em 1.5em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-size: 1.1em;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Al pasar el mouse se invierten los colores */
+.detail-btn:hover:not(:disabled) {
+    background-color: black;
+    color: white;
+}
+
+/* Contorno visible al navegar con el teclado */
+.detail-btn:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+/* Botón deshabilitado (producto agotado) */
+.detail-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* En celulares: menos padding y una sola columna */
+@media (max-width: 48em) {
+    .detail-wrapper {
+        padding: 1em;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5em;
+    }
+
+    .detail-name {
+        font-size: 1.7em;
+    }
+}

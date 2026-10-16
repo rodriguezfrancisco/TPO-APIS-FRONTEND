@@ -39,7 +39,7 @@
     outline-offset: 0.2em;
 }
 
-/* Mensajes de estado (cargando, error y producto inexistente) con borde punteado */
+/* Mensajes de estado (cargando y error) con borde punteado */
 .detail-message {
     padding: 2.5em 1em;
     border: 0.2em dashed white;

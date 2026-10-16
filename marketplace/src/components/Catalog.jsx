@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
 import './Catalog.css';
 
+// URL base del backend
+const URL = 'http://localhost:8080';
 // Cantidad de productos que se piden al backend por página
 const PAGE_SIZE = 12;
 
@@ -23,36 +25,33 @@ const Catalog = () => {
     const [sort, setSort] = useState('default');
 
     // Hacemos el GET al backend cada vez que cambia la página o la búsqueda
-    useEffect(() => {
+    useEffect(()=>{
         // Armamos la URL con la paginación y, si hay búsqueda, el keyword
-        let url = `http://localhost:8080/products?page=${page}&size=${PAGE_SIZE}`;
+        let url = `${URL}/products?page=${page}&size=${PAGE_SIZE}`;
         if (keyword) {
             // encodeURIComponent evita que espacios o símbolos rompan la URL
             url += `&keyword=${encodeURIComponent(keyword)}`;
         }
         fetch(url)
-        .then((response) => {
-            // Si el backend responde con error (500, 403, etc.) saltamos al catch
-            if (!response.ok) {
-                throw new Error(`Error ${response.status}`);
+        .then((response)=> response.json())
+        .then((data)=>{
+            // Si no vienen los productos (por ejemplo, un error del servidor) saltamos al catch
+            if (!data.content) {
+                throw new Error("La respuesta del servidor no es válida");
             }
-            return response.json();
-        })
-        .then((data) => {
             // El backend devuelve una página de Spring: los productos vienen en data.content
-            const list = Array.isArray(data) ? data : data.content || [];
-            setProducts(list);
-            setTotalPages(Array.isArray(data) ? 1 : data.totalPages || 1);
+            setProducts(data.content);
+            setTotalPages(data.totalPages);
             setError(null);
         })
-        .catch((error) => {
+        .catch((error)=>{
             console.error("Error al cargar el catalogo: ", error);
             setError(true);
         })
         // finally se ejecuta siempre, haya salido bien o mal
-        .finally(() => setLoading(false));
+        .finally(()=> setLoading(false));
     }, [page, keyword]); // Se vuelve a ejecutar solo si cambia alguno de estos dos
-
+    
     // Ordenamos por precio solo los productos de la página actual
     // Sin orden elegido se muestran como los manda el backend
     let visibleProducts = products;

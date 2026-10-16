@@ -55,10 +55,10 @@ const Catalog = () => {
     // Ordenamos por precio solo los productos de la página actual
     // Sin orden elegido se muestran como los manda el backend
     let visibleProducts = products;
-     if (sort === 'asc') {
+    if (sort === 'asc') {
         visibleProducts = [...products].sort((a, b) => a.finalPrice - b.finalPrice);
     }
-     if (sort === 'desc') {
+    if (sort === 'desc') {
         visibleProducts = [...products].sort((a, b) => b.finalPrice - a.finalPrice);
     }
 

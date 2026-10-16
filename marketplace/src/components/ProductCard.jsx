@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './ProductCard.css';
 
 // URL base para ver las imágenes que guarda el backend
@@ -24,24 +25,29 @@ const ProductCard = ({ product, onAdd }) => {
     return (
         <article className="product-card">
 
-            {/* 1. Imagen (o la silueta ゴ si el producto no tiene) */}
-            <div className="card-image-box halftone-card">
-                {hasImage ? (
-                    <img src={`${IMAGE_URL}${product.imageIds[0]}`} alt={product.name} className="card-image" loading="lazy"/>
-                ) : (
-                    <div className="card-placeholder">
-                        <span>ゴ</span>
-                    </div>
-                )}
-                {/* Etiquetas sobre la imagen */}
-                {soldOut && <span className="card-sold-out">Agotada</span>}
-                {hasDiscount && <span className="card-discount">-{product.discountPercentage}%</span>}
-            </div>
+            {/* 1. Imagen (o la silueta ゴ si el producto no tiene). Lleva al detalle del producto */}
+            <Link to={`/products/${product.id}`} className="card-link" tabIndex={-1} aria-hidden="true">
+                <div className="card-image-box halftone-card">
+                    {hasImage ? (
+                        <img src={`${IMAGE_URL}${product.imageIds[0]}`} alt={product.name} className="card-image" loading="lazy"/>
+                    ) : (
+                        <div className="card-placeholder">
+                            <span>ゴ</span>
+                        </div>
+                    )}
+                    {/* Etiquetas sobre la imagen */}
+                    {soldOut && <span className="card-sold-out">Agotada</span>}
+                    {hasDiscount && <span className="card-discount">-{product.discountPercentage}%</span>}
+                </div>
+            </Link>
 
             {/* 2. Datos del producto */}
             <div className="card-info">
                 {product.categoryName && <span className="card-category">{product.categoryName}</span>}
-                <h3 className="card-name">{product.name}</h3>
+                {/* El nombre también lleva al detalle del producto */}
+                <h3 className="card-name">
+                    <Link to={`/products/${product.id}`} className="card-name-link">{product.name}</Link>
+                </h3>
                 {/* Precio: con descuento se muestra el original tachado y al lado el final */}
                 <div className="card-price-box">
                     {hasDiscount && <span className="card-price-old">{formatPrice(product.price)}</span>}

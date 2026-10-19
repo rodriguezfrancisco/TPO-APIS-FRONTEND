@@ -90,6 +90,26 @@
     text-decoration-thickness: 0.15em;
 }
 
+/* BOTÓN DE SESIÓN (Ingresar / Cerrar sesión) */
+.auth-btn {
+    border: 0.15em solid white;
+    border-radius: 0;
+    height: 2.5em;
+    display: flex;
+    align-items: center;
+    padding: 0 1em;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.auth-btn:hover {
+    background-color: white;
+    color: black;
+}
+
 .cart-container {
     position: relative;
     display: flex;

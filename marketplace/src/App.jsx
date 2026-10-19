@@ -4,6 +4,7 @@ import Products from './views/Products'
 import Navbar from './components/Navbar'
 import Login from './views/Login'
 import Product from './views/Product'
+import Register from './views/Register'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<Product />} />
         <Route path="/login" element={<Login onLogin={login} />} />
+        <Route path="/register" element={<Register onLogin={login} />} />
       </Routes>
     </>
   )

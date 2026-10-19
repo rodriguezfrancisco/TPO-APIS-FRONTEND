@@ -1,24 +1,39 @@
-/* Los estilos base del formulario (cuadro, campos, botón) se reutilizan de LoginForm.css */
+/* =========================================================
+   REGISTRO — estilos
+   Solo agrega lo propio del registro: la fila con dos campos.
+   El cuadro, los campos, el botón y el link de cambio se
+   reutilizan de LoginForm.css, así ambas pantallas se ven iguales.
+   Todas las medidas en em para que escalen con la fuente.
+   ========================================================= */
 
-/* Fila con dos campos lado a lado (nombre y apellido) */
+
+/* ---------- Fila de dos campos ---------- */
+
+/* Nombre y apellido lado a lado, en dos columnas iguales */
 .register-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1em;
 }
 
-/* Cada campo de la fila: etiqueta arriba y campo abajo */
+/* Cada mitad de la fila: etiqueta arriba y campo abajo,
+   con el mismo espaciado que usa .login-form */
 .register-group {
     display: flex;
     flex-direction: column;
     gap: 0.6em;
-    min-width: 0; /* Permite que los campos se achiquen dentro de la grilla */
+    min-width: 0;              /* permite que el campo se achique dentro de la grilla
+                                  sin desbordar en pantallas angostas */
 }
 
-/* En celulares: nombre y apellido uno debajo del otro */
+
+/* ---------- Responsive: pantallas chicas (≤ 40em ≈ 640px) ---------- */
+
 @media (max-width: 40em) {
+    /* Nombre y apellido pasan a apilarse en una sola columna */
     .register-row {
         grid-template-columns: 1fr;
-        gap: 0;
+        gap: 0;                /* sin separación extra: el margin-bottom de .login-field
+                                  ya deja el mismo espacio que entre el resto de los campos */
     }
 }

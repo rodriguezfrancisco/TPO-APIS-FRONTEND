@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 
-const Navbar = () => {
+const Navbar = ({ token, onLogout }) => {
     const cartItemsCount = 2; // Hardcodeado por ahora
 
     return (
@@ -39,6 +39,13 @@ const Navbar = () => {
                     <Link to="/how-to-buy" className="nav-link">Cómo comprar</Link>
                     <Link to="/contact" className="nav-link">Contacto</Link>
                 </div>
+
+                {/* Inicio y cierre de sesión */}
+                {token ? (
+                    <button type="button" className="auth-btn" onClick={onLogout}>Cerrar sesión</button>
+                ) : (
+                    <Link to="/login" className="auth-btn">Ingresar</Link>
+                )}
 
                 {/* Contenedor del carrito */}
                 <div className="cart-container">

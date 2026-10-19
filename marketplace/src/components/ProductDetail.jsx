@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import './ProductDetail.css';
 
 // URL base del backend
@@ -50,6 +50,44 @@ const ProductDetail = ({ onAdd }) => {
     const hasImage = product && product.imageIds && product.imageIds.length > 0;
     const soldOut = product && product.stock <= 0;
     const hasDiscount = product && product.discountPercentage > 0;
+
+    const navigate = useNavigate();
+ const location = useLocation();
+
+ const handleAddToCart = (product) => {
+     const token = localStorage.getItem('jwtToken');
+     if (!token) {
+         navigate('/login');
+         return;
+     }
+
+     // Guardamos la imagen del producto para mostrar la miniatura en el modal
+     if (product.imageIds && product.imageIds.length > 0) {
+         const savedImages = JSON.parse(localStorage.getItem('cartImages') || '{}');
+         savedImages[product.id] = product.imageIds[0];
+         localStorage.setItem('cartImages', JSON.stringify(savedImages));
+     }
+
+     fetch(`${URL}/cartItems`, {
+         method: 'POST',
+         headers: {
+             'Content-Type': 'application/json',
+             Authorization: `Bearer ${token}`
+         },
+         body: JSON.stringify({ productId: product.id, quantity: 1 })
+     })
+     .then((response) => response.json())
+     .then((updatedCart) => {
+         if (updatedCart && updatedCart.items) {
+             // Enviamos el carrito devuelto por el POST a la Navbar y abrimos el modal
+             navigate(location.pathname, {
+                 replace: true,
+                 state: { updatedCart, openCart: true, timestamp: Date.now() }
+             });
+         }
+     })
+     .catch((error) => console.error("Error al agregar al carrito: ", error));
+ };
 
     return (
         <section className="detail-wrapper">
@@ -122,9 +160,9 @@ const ProductDetail = ({ onAdd }) => {
                             {product.sellerUsername && <p className="detail-seller">Vendido por {product.sellerUsername}</p>}
                             {/* Botón de agregar: solo aparece si el componente padre le pasa onAdd */}
                             {onAdd && (
-                                <button type="button" className="detail-btn" disabled={soldOut} onClick={() => onAdd(product)}>
-                                    {soldOut ? 'Agotada' : 'Agregar al carrito'}
-                                </button>
+                                <button type="button" className="detail-btn" disabled={soldOut} onClick={() => handleAddToCart(product)}>
+                                        {soldOut ? 'Agotada' : 'Agregar al carrito'}
+                                    </button>
                             )}
                         </div>
                     </div>

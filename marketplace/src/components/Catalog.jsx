@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import './Catalog.css';
 
@@ -84,6 +85,44 @@ const Catalog = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleAddToCart = (product) => {
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+
+        // Guardamos la imagen del producto para mostrar la miniatura en el modal
+        if (product.imageIds && product.imageIds.length > 0) {
+            const savedImages = JSON.parse(localStorage.getItem('cartImages') || '{}');
+            savedImages[product.id] = product.imageIds[0];
+            localStorage.setItem('cartImages', JSON.stringify(savedImages));
+        }
+
+        fetch(`${URL}/cartItems`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ productId: product.id, quantity: 1 })
+        })
+        .then((response) => response.json())
+        .then((updatedCart) => {
+            if (updatedCart && updatedCart.items) {
+                // Enviamos el carrito devuelto por el POST a la Navbar y abrimos el modal
+                navigate(location.pathname, {
+                    replace: true,
+                    state: { updatedCart, openCart: true, timestamp: Date.now() }
+                });
+            }
+        })
+        .catch((error) => console.error("Error al agregar al carrito: ", error));
+    };
+
     return (
         <section className="catalog-wrapper">
             <div className="catalog-container">
@@ -135,7 +174,7 @@ const Catalog = () => {
                 {!loading && !error && visibleProducts.length > 0 && (
                     <div className="catalog-grid">
                         {visibleProducts.map((product) => (
-                            <ProductCard key={product.id ?? product.id_product} product={product} />
+                            <ProductCard key={product.id ?? product.id_product} product={product} onAdd={handleAddToCart} />
                         ))}
                     </div>
                 )}

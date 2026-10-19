@@ -107,6 +107,30 @@
     cursor: not-allowed;
 }
 
+/* Texto con el link para pasar del login al registro (y al revés) */
+.login-switch {
+    margin-top: 1.5em;
+    text-align: center;
+    font-size: 0.9em;
+    font-weight: 700;
+}
+
+.login-switch a {
+    font-weight: 900;
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+}
+
+.login-switch a:hover {
+    opacity: 0.7;
+}
+
+/* Contorno visible al navegar con el teclado */
+.login-switch a:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
 /* En celulares: menos padding */
 @media (max-width: 40em) {
     .login-wrapper {

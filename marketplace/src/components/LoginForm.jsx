@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './LoginForm.css';
 
 // URL base del backend
@@ -88,6 +88,8 @@ const LoginForm = ({ onLogin }) => {
                         {loading ? 'Ingresando...' : 'Ingresar'}
                     </button>
                 </form>
+                {/* 5. Link para quien todavía no tiene cuenta */}
+                <p className="login-switch">¿No tenés cuenta? <Link to="/register">Registrate</Link></p>
             </div>
         </section>
     );

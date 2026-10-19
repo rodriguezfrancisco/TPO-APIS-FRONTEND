@@ -9,23 +9,33 @@
 
 /* ---------- Contenedor general ---------- */
 
-/* Barra horizontal con línea blanca abajo como separador */
+/* Contenedor Principal */
 .custom-navbar {
     padding: 1em 1.5em;
     border-bottom: 0.15em solid white;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 2em; /* Garantiza separación mínima entre el buscador y los links */
     width: 100%;
 }
 
-/* Cada sección (logo / buscador / links) toma el mismo ancho:
-   así el buscador queda centrado de verdad, sin importar
-   cuánto ocupen el logo y los links */
+/* Divisiones de la barra: le damos menos ancho vacío al logo y más a la botonera */
 .nav-section {
-    flex: 1;
     display: flex;
     align-items: center;
+}
+.justify-start { 
+    flex: 0.6; 
+    justify-content: flex-start; 
+}
+.justify-center { 
+    flex: 1.1; 
+    justify-content: center; 
+}
+.justify-end { 
+    flex: 1.3; 
+    justify-content: flex-end; 
 }
 
 /* Utilidades para alinear el contenido de cada sección */
@@ -122,13 +132,15 @@
     letter-spacing: 0.05em;    /* separa un poco las letras para que se lean mejor en mayúscula */
 }
 
-/* Al pasar el mouse aparece un subrayado grueso y separado del texto */
+.nav-link {
+    white-space: nowrap;
+}
+
 .nav-link:hover {
     text-decoration: underline;
     text-underline-offset: 0.3em;
     text-decoration-thickness: 0.15em;
 }
-
 
 /* ---------- Botón de sesión (Ingresar / Cerrar sesión) ---------- */
 

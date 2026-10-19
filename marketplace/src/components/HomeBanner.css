@@ -210,6 +210,30 @@
     color: black;
     -webkit-text-stroke: 0.05em white;
     z-index: 10;
+    display: flex;
+    gap: 0.08em;
+}
+
+.comic-symbols span {
+    display: inline-block;
+    animation: menacing-rumble 0.25s infinite ease-in-out;
+}
+
+/* Desfasamos cada letra para que vibren de forma independiente */
+.comic-symbols span:nth-child(2) {
+    animation-delay: 0.08s;
+}
+
+.comic-symbols span:nth-child(3) {
+    animation-delay: 0.16s;
+}
+
+@keyframes menacing-rumble {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(-0.04em, 0.05em) rotate(-3deg); }
+    50%  { transform: translate(0.05em, -0.03em) rotate(2deg); }
+    75%  { transform: translate(-0.03em, -0.05em) rotate(-1deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
 }
 
 /* =========================================

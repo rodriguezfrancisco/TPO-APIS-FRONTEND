@@ -69,7 +69,9 @@ const HomeBanner = () => {
 
                     {/* Símbolos decorativos (ゴゴゴ) */}
                     <div className="comic-symbols">
-                        ゴゴゴ
+                        <span>ゴ</span>
+                        <span>ゴ</span>
+                        <span>ゴ</span>
                     </div>
 
                     {/* Imagen del producto de la BD */}

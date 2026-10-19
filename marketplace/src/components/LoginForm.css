@@ -1,80 +1,106 @@
-/* Contenedor envolvente con el fondo negro: centra el cuadro del login */
+/* =========================================================
+   LOGIN / REGISTRO — estilos
+   Estética: blanco y negro de alto contraste, bordes rectos
+   y sombra sólida desplazada estilo cómic.
+   Todas las medidas en em/rem para que escalen con la fuente.
+   ========================================================= */
+
+
+/* ---------- Contenedor general ---------- */
+
+/* Fondo de toda la sección; centra la tarjeta horizontalmente */
 .login-wrapper {
     padding: 2em;
     background-color: black;
     color: white;
-    min-height: 70vh; /* Para que la página no se achique mientras carga */
+    min-height: 70vh;          /* ocupa al menos el 70% del alto de la pantalla,
+                                  así la página no "salta" mientras carga */
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    font-size: 1rem; /* Base para em, se ajusta con Media Queries */
+    align-items: flex-start;   /* la tarjeta queda arriba, no centrada verticalmente */
+    font-size: 1rem;           /* base fija: los em de adentro se calculan sobre esto */
 }
 
-/* Cuadro del login: borde blanco con sombra dura estilo cómic */
+
+/* ---------- Tarjeta ---------- */
+
+/* Caja del formulario con borde blanco y sombra dura sin desenfoque */
 .login-box {
     width: 100%;
-    max-width: 28em;
+    max-width: 28em;           /* no se estira de más en pantallas anchas */
     padding: 2em;
     border: 0.2em solid white;
-    box-shadow: 0.4em 0.4em 0 white;
+    box-shadow: 0.4em 0.4em 0 white;   /* desplazada abajo a la derecha, blur 0 */
 }
 
-/* Título */
+
+/* ---------- Título ---------- */
+
 .login-title {
     margin-bottom: 1.2em;
     font-size: 1.8em;
-    font-weight: 900;
+    font-weight: 900;          /* el peso más grueso */
     font-style: italic;
     text-transform: uppercase;
 }
 
-/* Formulario: un campo debajo del otro */
+
+/* ---------- Formulario ---------- */
+
+/* Etiquetas, campos y botón apilados en columna */
 .login-form {
     display: flex;
     flex-direction: column;
     gap: 0.6em;
 }
 
-/* Etiqueta de cada campo */
+/* Texto arriba de cada campo */
 .login-label {
     font-size: 0.85em;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.05em;    /* separa un poco las letras para que se lean mejor en mayúscula */
 }
 
-/* Campos de texto (bordes cuadrados estilo cómic) */
+/* Inputs: fondo negro, borde blanco y esquinas rectas */
 .login-field {
     margin-bottom: 0.6em;
     padding: 0.8em 1em;
     border: 0.15em solid white;
-    border-radius: 0;
+    border-radius: 0;          /* anula el redondeo por defecto de algunos navegadores */
     background-color: black;
     color: white;
     font-weight: 700;
-    min-width: 0; /* Permite que el campo se achique dentro del flex */
+    min-width: 0;              /* permite que el campo se achique dentro del flex
+                                  sin desbordar en pantallas angostas */
 }
 
-/* Contorno visible al navegar con el teclado */
+/* Foco visible solo al navegar con teclado (accesibilidad) */
 .login-field:focus-visible {
     outline: 0.2em solid white;
-    outline-offset: 0.2em;
+    outline-offset: 0.2em;     /* separa el contorno del borde para que se distinga */
 }
 
-/* Cuando el navegador autocompleta, mantiene el fondo negro y el texto blanco */
+/* El autocompletado del navegador pinta el fondo de amarillo/celeste:
+   una sombra interna enorme lo tapa con negro y se fuerza el texto blanco */
 .login-field:-webkit-autofill {
     -webkit-text-fill-color: white;
     box-shadow: 0 0 0 100em black inset;
 }
 
-/* Mensaje de error con borde punteado */
+
+/* ---------- Mensaje de error ---------- */
+
 .login-error {
     padding: 0.8em 1em;
-    border: 0.2em dashed white;
+    border: 0.2em dashed white;    /* borde punteado, mismo recurso que los avisos del catálogo */
     font-weight: 700;
 }
 
-/* Botón de ingresar */
+
+/* ---------- Botón de ingresar ---------- */
+
+/* Botón principal: blanco con texto negro */
 .login-btn {
     margin-top: 0.4em;
     padding: 0.9em 1.5em;
@@ -86,28 +112,31 @@
     font-weight: 900;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;  /* suaviza el cambio al hover */
 }
 
-/* Al pasar el mouse se invierten los colores */
+/* Al pasar el mouse se invierten los colores (solo si el botón está habilitado) */
 .login-btn:hover:not(:disabled) {
     background-color: black;
     color: white;
 }
 
-/* Contorno visible al navegar con el teclado */
+/* Foco con teclado, igual que en los campos */
 .login-btn:focus-visible {
     outline: 0.2em solid white;
     outline-offset: 0.2em;
 }
 
-/* Botón deshabilitado (mientras se envía el formulario) */
+/* Botón deshabilitado (mientras se envía el formulario): atenuado y sin click */
 .login-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-/* Texto con el link para pasar del login al registro (y al revés) */
+
+/* ---------- Link login ⇄ registro ---------- */
+
+/* Texto de abajo para cambiar entre iniciar sesión y crear cuenta */
 .login-switch {
     margin-top: 1.5em;
     text-align: center;
@@ -115,28 +144,34 @@
     font-weight: 700;
 }
 
+/* El link en sí: más grueso y subrayado */
 .login-switch a {
     font-weight: 900;
     text-decoration: underline;
-    text-underline-offset: 0.3em;
+    text-underline-offset: 0.3em;  /* baja el subrayado para que no pise las letras */
 }
 
+/* Al pasar el mouse se atenúa */
 .login-switch a:hover {
     opacity: 0.7;
 }
 
-/* Contorno visible al navegar con el teclado */
+/* Foco con teclado, igual que en los campos */
 .login-switch a:focus-visible {
     outline: 0.2em solid white;
     outline-offset: 0.2em;
 }
 
-/* En celulares: menos padding */
+
+/* ---------- Responsive: pantallas chicas (≤ 40em ≈ 640px) ---------- */
+
 @media (max-width: 40em) {
+    /* Menos relleno para aprovechar el ancho del celular */
     .login-wrapper {
         padding: 1em;
     }
 
+    /* La tarjeta también achica su relleno interno */
     .login-box {
         padding: 1.2em;
     }

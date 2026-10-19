@@ -1,0 +1,24 @@
+/* Los estilos base del formulario (cuadro, campos, botón) se reutilizan de LoginForm.css */
+
+/* Fila con dos campos lado a lado (nombre y apellido) */
+.register-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+}
+
+/* Cada campo de la fila: etiqueta arriba y campo abajo */
+.register-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+    min-width: 0; /* Permite que los campos se achiquen dentro de la grilla */
+}
+
+/* En celulares: nombre y apellido uno debajo del otro */
+@media (max-width: 40em) {
+    .register-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}

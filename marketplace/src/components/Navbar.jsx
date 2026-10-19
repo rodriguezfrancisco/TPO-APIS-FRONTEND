@@ -71,6 +71,8 @@ const Navbar = ({ token, onLogout }) => {
                     
                     <div className="nav-links hide-on-mobile">
                         <Link to="/products" className="nav-link">Productos</Link>
+                        {token && <Link to="/sell" className="nav-link">Vender</Link>}
+                        {token && <Link to="/profile" className="nav-link">Mi Perfil</Link>}
                         <Link to="/how-to-buy" className="nav-link">Cómo comprar</Link>
                         <Link to="/contact" className="nav-link">Contacto</Link>
                     </div>

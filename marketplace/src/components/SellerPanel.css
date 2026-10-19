@@ -1,0 +1,237 @@
+.seller-wrapper {
+    padding: 2em;
+    background-color: black;
+    color: white;
+    min-height: 75vh;
+    font-size: 1rem;
+}
+
+.seller-container {
+    max-width: 80em;
+    margin: 0 auto;
+}
+
+.seller-title {
+    display: inline-block;
+    margin-bottom: 1.2em;
+    padding: 0.2em 0.6em;
+    background-color: white;
+    color: black;
+    font-size: 2.2em;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    transform: skewX(-6deg);
+}
+
+.seller-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 2em;
+    align-items: start;
+}
+
+.seller-box {
+    border: 0.2em solid white;
+    box-shadow: 0.4em 0.4em 0 white;
+    padding: 2em;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+}
+
+.seller-subtitle {
+    font-size: 1.5em;
+    font-weight: 900;
+    text-transform: uppercase;
+    border-bottom: 0.15em solid white;
+    padding-bottom: 0.5em;
+}
+
+.seller-cat-form {
+    display: flex;
+    gap: 0.5em;
+    padding-bottom: 1em;
+    border-bottom: 0.1em dashed rgba(255, 255, 255, 0.5);
+}
+
+.seller-cat-form .seller-field {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.seller-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+
+.seller-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.8em;
+}
+
+.seller-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+    min-width: 0;
+}
+
+.seller-label {
+    font-size: 0.85em;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.seller-label-sm {
+    font-size: 0.75em;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.seller-field {
+    padding: 0.75em 0.9em;
+    border: 0.15em solid white;
+    background-color: black;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 0.4em;
+}
+
+.seller-field-sm {
+    padding: 0.5em;
+    border: 0.12em solid white;
+    background-color: black;
+    color: white;
+    font-weight: 700;
+}
+
+.seller-btn-primary,
+.seller-btn-small {
+    padding: 0.9em 1.4em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.seller-btn-primary:hover:not(:disabled),
+.seller-btn-small:hover {
+    background-color: black;
+    color: white;
+}
+
+.seller-products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+}
+
+.seller-item-card {
+    border: 0.15em solid white;
+    padding: 1.2em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9em;
+}
+
+.seller-item-header {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+
+.seller-item-thumb {
+    width: 3.5em;
+    height: 3.5em;
+    border: 0.12em solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.seller-item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.seller-item-title-box {
+    flex: 1;
+}
+
+.seller-item-name {
+    font-size: 1.05em;
+    font-weight: 900;
+}
+
+.seller-item-cat {
+    font-size: 0.75em;
+    opacity: 0.7;
+    text-transform: uppercase;
+}
+
+.seller-btn-secondary {
+    padding: 0.6em 1em;
+    border: 0.12em solid white;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.seller-btn-secondary:hover {
+    background-color: black;
+    color: white;
+}
+
+.seller-btn-danger {
+    padding: 0.4em 0.8em;
+    border: 0.12em solid white;
+    background-color: black;
+    color: white;
+    font-size: 0.8em;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.seller-btn-danger:hover {
+    background-color: white;
+    color: black;
+}
+
+.seller-message,
+.seller-error-box {
+    padding: 1.2em;
+    border: 0.15em dashed white;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.seller-success-box {
+    padding: 1em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+@media (max-width: 55em) {
+    .seller-grid,
+    .seller-row-3 {
+        grid-template-columns: 1fr;
+    }
+}

@@ -6,6 +6,8 @@ import Navbar from './components/Navbar';
 import Login from './views/Login';
 import Product from './views/Product';
 import Register from './views/Register';
+import Profile from './views/Profile';
+import Sell from './views/Sell';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('jwtToken') || '');
@@ -30,6 +32,8 @@ function App() {
         <Route path="/products/:id" element={<Product />} />
         <Route path="/login" element={<Login onLogin={login} />} />
         <Route path="/register" element={<Register onLogin={login} />} />
+        <Route path="/profile" element={<Profile onLogin={login} />} />
+        <Route path="/sell" element={<Sell />} />
       </Routes>
     </>
   );

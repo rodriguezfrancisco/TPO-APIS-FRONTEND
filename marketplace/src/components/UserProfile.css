@@ -1,0 +1,211 @@
+.profile-wrapper {
+    padding: 2em;
+    background-color: black;
+    color: white;
+    min-height: 75vh;
+    font-size: 1rem;
+}
+
+.profile-container {
+    max-width: 75em;
+    margin: 0 auto;
+}
+
+.profile-main-title {
+    display: inline-block;
+    margin-bottom: 1.2em;
+    padding: 0.2em 0.6em;
+    background-color: white;
+    color: black;
+    font-size: 2.2em;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    transform: skewX(-6deg);
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2em;
+    align-items: start;
+}
+
+.profile-card {
+    border: 0.2em solid white;
+    box-shadow: 0.4em 0.4em 0 white;
+    padding: 2em;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding-bottom: 1em;
+    border-bottom: 0.15em solid white;
+}
+
+.profile-avatar {
+    width: 2.2em;
+    height: 2.2em;
+    background-color: white;
+    color: black;
+    font-size: 1.8em;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-username {
+    font-size: 1.4em;
+    font-weight: 900;
+}
+
+.profile-role-badge {
+    display: inline-block;
+    margin-top: 0.3em;
+    padding: 0.15em 0.6em;
+    background-color: white;
+    color: black;
+    font-size: 0.75em;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.profile-seller-cta {
+    padding: 0.8em 1em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.profile-seller-cta:hover {
+    background-color: black;
+    color: white;
+}
+
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+
+.profile-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1em;
+}
+
+.profile-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    min-width: 0;
+}
+
+.profile-label {
+    font-size: 0.85em;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.profile-input {
+    padding: 0.75em 1em;
+    border: 0.15em solid white;
+    background-color: black;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 0.4em;
+}
+
+.profile-btn {
+    margin-top: 0.5em;
+    padding: 0.9em 1.5em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.profile-btn:hover:not(:disabled) {
+    background-color: black;
+    color: white;
+}
+
+.profile-section-title {
+    font-size: 1.5em;
+    font-weight: 900;
+    text-transform: uppercase;
+    border-bottom: 0.15em solid white;
+    padding-bottom: 0.5em;
+}
+
+.profile-orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.profile-order-item {
+    border: 0.15em solid white;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35em;
+}
+
+.profile-order-top {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 900;
+    border-bottom: 0.1em dashed rgba(255, 255, 255, 0.5);
+    padding-bottom: 0.4em;
+}
+
+.profile-order-detail {
+    font-size: 0.9em;
+}
+
+.profile-order-total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.4em;
+    padding-top: 0.4em;
+    border-top: 0.12em solid white;
+    font-weight: 900;
+    font-size: 1.1em;
+}
+
+.profile-status-box {
+    padding: 1em;
+    border: 0.15em dashed white;
+    font-weight: 700;
+    text-align: center;
+}
+
+.profile-success-box {
+    padding: 0.8em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    text-align: center;
+}
+
+@media (max-width: 50em) {
+    .profile-grid,
+    .profile-row {
+        grid-template-columns: 1fr;
+    }
+}

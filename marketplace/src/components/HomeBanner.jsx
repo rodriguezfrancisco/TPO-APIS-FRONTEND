@@ -76,17 +76,22 @@ const HomeBanner = () => {
 
                     {/* Imagen del producto de la BD */}
                     <div className="featured-image-container">
-                        {imageUrl ? (
-                            <img 
-                                src={imageUrl} 
-                                alt={featuredProduct?.name || 'Figura de anime'} 
-                                className="product-image"
-                            />
+                        {imageUrl && featuredProduct?.id ? (
+                            <Link 
+                                to={`/products/${featuredProduct.id}`} 
+                                className="featured-product-link"
+                                aria-label={`Ver detalle de ${featuredProduct.name}`}
+                            >
+                                <img 
+                                    src={imageUrl} 
+                                    alt={featuredProduct.name || 'Figura de anime'} 
+                                    className="product-image"
+                                />
+                            </Link>
                         ) : (
                             <div className="placeholder-silhouette"></div>
                         )}
                     </div>
-
                 </div>
             </div>
         </section>

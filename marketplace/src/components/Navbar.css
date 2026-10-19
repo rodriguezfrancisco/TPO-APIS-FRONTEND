@@ -1,4 +1,15 @@
-/* Contenedor Principal */
+/* =========================================================
+   NAVBAR — estilos
+   Estética: blanco y negro de alto contraste, bordes rectos
+   y tipografía pesada, igual que el resto del sitio.
+   Todas las medidas en em para que la barra entera escale
+   cambiando un solo font-size (ver media queries al final).
+   ========================================================= */
+
+
+/* ---------- Contenedor general ---------- */
+
+/* Barra horizontal con línea blanca abajo como separador */
 .custom-navbar {
     padding: 1em 1.5em;
     border-bottom: 0.15em solid white;
@@ -8,25 +19,35 @@
     width: 100%;
 }
 
-/* Divisiones de la barra (3 columnas iguales para centrar el buscador) */
+/* Cada sección (logo / buscador / links) toma el mismo ancho:
+   así el buscador queda centrado de verdad, sin importar
+   cuánto ocupen el logo y los links */
 .nav-section {
     flex: 1;
     display: flex;
     align-items: center;
 }
-.justify-start { justify-content: flex-start; }
-.justify-center { justify-content: center; }
-.justify-end { justify-content: flex-end; }
 
-/* LOGO */
+/* Utilidades para alinear el contenido de cada sección */
+.justify-start { justify-content: flex-start; }    /* izquierda */
+.justify-center { justify-content: center; }       /* centro */
+.justify-end { justify-content: flex-end; }        /* derecha */
+
+
+/* ---------- Logo ---------- */
+
+/* Link que agrupa el cuadrado y el texto del logo */
 .logo-link {
     display: flex;
     align-items: center;
     gap: 0.75em;
-    width: max-content;
+    width: max-content;        /* el área clickeable se ajusta al logo, no a toda la sección */
 }
+
+/* Al pasar el mouse se atenúa levemente */
 .logo-link:hover { opacity: 0.8; }
 
+/* Cuadrado blanco con la inicial en negro */
 .logo-box {
     background-color: white;
     color: black;
@@ -34,23 +55,28 @@
     font-weight: bold;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center;   /* centra la letra dentro del cuadrado */
     width: 1.5em;
-    height: 1.5em;
-    line-height: 1;
+    height: 1.5em;             /* mismo ancho y alto: cuadrado perfecto */
+    line-height: 1;            /* evita espacio extra arriba/abajo de la letra */
 }
 
+/* Título y subtítulo apilados al lado del cuadrado */
 .logo-text {
     display: flex;
     flex-direction: column;
     justify-content: center;
     line-height: 1;
 }
+
+/* Nombre de la marca: grueso y con letras apretadas */
 .logo-title {
     font-size: 1.5em;
     font-weight: 900;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.05em;   /* espaciado negativo: letras más juntas */
 }
+
+/* Bajada chiquita y muy espaciada debajo del nombre */
 .logo-subtitle {
     font-size: 0.4em;
     font-weight: bold;
@@ -58,23 +84,34 @@
     margin-top: 0.25em;
 }
 
-/* BUSCADOR */
+
+/* ---------- Buscador ---------- */
+
+/* Input de búsqueda con borde blanco y esquinas rectas */
 .search-input {
     border: 0.15em solid white;
-    border-radius: 0; /* Bordes cuadrados estilo cómic */
+    border-radius: 0;          /* bordes cuadrados estilo cómic */
     width: 100%;
-    max-width: 32em;
-    height: 2.5em;
-    min-height: 0;
+    max-width: 32em;           /* no se estira de más en pantallas anchas */
+    height: 2.5em;             /* misma altura que los botones de la derecha */
+    min-height: 0;             /* anula alturas mínimas heredadas de otros estilos */
     font-weight: bold;
     padding: 0 1em;
 }
+
+/* Texto de ayuda en blanco */
 .search-input::placeholder { color: white; }
+
+/* Al enfocar se reemplaza el contorno por defecto por un borde gris */
 .search-input:focus { outline: none; border-color: #9ca3af; }
 
-/* NAVEGACIÓN Y CARRITO */
+
+/* ---------- Navegación y carrito ---------- */
+
+/* Separación entre el bloque de links, el botón de sesión y el carrito */
 .gap-links { gap: 1.5em; }
 
+/* Lista de links en fila, chicos, en mayúscula y bien gruesos */
 .nav-links {
     display: flex;
     align-items: center;
@@ -82,15 +119,20 @@
     font-size: 0.875em;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.05em;    /* separa un poco las letras para que se lean mejor en mayúscula */
 }
+
+/* Al pasar el mouse aparece un subrayado grueso y separado del texto */
 .nav-link:hover {
     text-decoration: underline;
     text-underline-offset: 0.3em;
     text-decoration-thickness: 0.15em;
 }
 
-/* BOTÓN DE SESIÓN (Ingresar / Cerrar sesión) */
+
+/* ---------- Botón de sesión (Ingresar / Cerrar sesión) ---------- */
+
+/* Botón negro con borde blanco, misma altura que el carrito */
 .auth-btn {
     border: 0.15em solid white;
     border-radius: 0;
@@ -101,21 +143,28 @@
     background-color: black;
     color: white;
     font-weight: bold;
-    white-space: nowrap;
+    white-space: nowrap;       /* "Cerrar sesión" no se parte en dos líneas */
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;  /* suaviza el cambio al hover */
 }
+
+/* Al pasar el mouse se invierten los colores */
 .auth-btn:hover {
     background-color: white;
     color: black;
 }
 
+
+/* ---------- Carrito ---------- */
+
+/* Envoltorio relativo: sirve de referencia para posicionar el contador */
 .cart-container {
     position: relative;
     display: flex;
     align-items: center;
 }
 
+/* Botón del carrito: ícono + texto en fila */
 .cart-btn {
     border: 0.15em solid white;
     border-radius: 0;
@@ -127,45 +176,52 @@
     padding: 0 1em;
     font-weight: bold;
 }
+
+/* Al pasar el mouse se aclara el fondo */
 .cart-btn:hover { background-color: #e5e7eb; }
 
+/* Ícono del carrito, proporcional al texto */
 .cart-icon {
     width: 1.25em;
     height: 1.25em;
 }
 
+/* Contador de productos flotando sobre la esquina superior derecha del botón */
 .cart-badge {
     position: absolute;
     top: -0.5em;
-    right: -0.5em;
+    right: -0.5em;             /* valores negativos: sobresale del botón */
     border: 0.15em solid white;
     border-radius: 0;
     font-weight: bold;
     font-size: 0.75em;
     height: 1.5em;
-    min-width: 1.5em;
+    min-width: 1.5em;          /* cuadrado con 1 dígito, se ensancha con más */
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 0.2em;
-    z-index: 10;
+    z-index: 10;               /* queda por encima del botón */
     line-height: 1;
 }
 
-/* En pantallas medianas, achicamos la fuente base. 
-   Como todo usa 'em', TODO (logo, input, botones, márgenes) se achica un 15% automáticamente */
-@media (max-width: 1024px) { 
-    .custom-navbar { font-size: 0.85rem; } 
+
+/* ---------- Responsive ---------- */
+
+/* Pantallas medianas (≤ 1024px): se achica la fuente base de la barra.
+   Como todo usa em, logo, input, botones y márgenes bajan un 15% juntos */
+@media (max-width: 1024px) {
+    .custom-navbar { font-size: 0.85rem; }
 }
 
-/* Si la pantalla se achica un poco más, lo reducimos un 25% */
-@media (max-width: 850px) { 
-    .custom-navbar { font-size: 0.75rem; } 
+/* Un poco más angosta (≤ 850px): se reduce un 25% */
+@media (max-width: 850px) {
+    .custom-navbar { font-size: 0.75rem; }
 }
 
-/* Menor a 768px, ocultamos el buscador y los links para no saturar,
-   y volvemos la fuente al tamaño normal para que el logo y el carrito se vean bien */
-@media (max-width: 768px) { 
+/* Celulares (≤ 768px): se ocultan buscador y links para no saturar,
+   y la fuente vuelve al tamaño normal para que logo y carrito se vean bien */
+@media (max-width: 768px) {
     .hide-on-mobile { display: none; }
-    .custom-navbar { font-size: 1rem; } 
+    .custom-navbar { font-size: 1rem; }
 }

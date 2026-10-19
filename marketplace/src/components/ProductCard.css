@@ -1,65 +1,84 @@
-/* Tarjeta de producto: borde blanco sobre fondo negro */
+/* =========================================================
+   TARJETA DE PRODUCTO — estilos
+   Estética: blanco y negro de alto contraste, bordes rectos,
+   sombra dura estilo cómic y trama de puntos tipo manga.
+   Todas las medidas en em para que escalen con la fuente.
+   ========================================================= */
+
+
+/* ---------- Tarjeta ---------- */
+
+/* Columna: imagen arriba, datos abajo, con borde blanco sobre fondo negro */
 .product-card {
     display: flex;
     flex-direction: column;
     background-color: black;
     color: white;
     border: 0.2em solid white;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;  /* suaviza el "levantarse" al hover */
 }
 
-/* Al pasar el mouse la tarjeta se levanta con sombra dura estilo cómic */
+/* Al pasar el mouse la tarjeta sube en diagonal y aparece la sombra dura:
+   el desplazamiento y la sombra suman el efecto de "despegarse" del fondo */
 .product-card:hover {
     transform: translate(-0.2em, -0.2em);
-    box-shadow: 0.4em 0.4em 0 white;
+    box-shadow: 0.4em 0.4em 0 white;   /* sin desenfoque, estilo cómic */
 }
 
-/* Enlace que envuelve la imagen: ocupa todo el ancho de la tarjeta */
+
+/* ---------- Imagen ---------- */
+
+/* Link que envuelve la imagen: toda la zona es clickeable */
 .card-link {
-    display: block;
+    display: block;            /* ocupa todo el ancho de la tarjeta */
     color: inherit;
     text-decoration: none;
 }
 
-/* Caja cuadrada de la imagen */
+/* Caja cuadrada que contiene la imagen, con línea blanca abajo como separador */
 .card-image-box {
-    position: relative; /* Para ubicar las etiquetas sobre la imagen */
-    aspect-ratio: 1 / 1;
+    position: relative;        /* referencia para ubicar las etiquetas encima */
+    aspect-ratio: 1 / 1;       /* siempre cuadrada, sin importar la imagen */
     border-bottom: 0.2em solid white;
-    overflow: hidden;
+    overflow: hidden;          /* recorta lo que se salga de la caja */
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center;   /* centra la imagen o la silueta */
 }
 
-/* Efecto de Screentone (puntos de manga) */
+/* Fondo de trama de puntos (screentone de manga):
+   un degradado radial genera un punto blanco semitransparente
+   y background-size lo repite en una grilla chiquita */
 .halftone-card {
     background-image: radial-gradient(rgba(255, 255, 255, 0.25) 15%, transparent 16%);
     background-size: 0.4em 0.4em;
     background-position: 0 0, 0.2em 0.2em;
 }
 
-/* La imagen entra completa sin deformarse */
+/* La imagen entra completa sin deformarse ni recortarse */
 .card-image {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: contain;       /* respeta la proporción original; deja ver la trama a los costados */
 }
 
-/* Silueta de reemplazo (si el producto no tiene imagen) */
+/* Silueta de reemplazo cuando el producto no tiene imagen */
 .card-placeholder {
     width: 55%;
     aspect-ratio: 1 / 1;
     border: 0.2em solid white;
-    background-color: black;
+    background-color: black;   /* tapa la trama de fondo */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3.5em;
+    font-size: 3.5em;          /* letra o símbolo grande en el centro */
     font-weight: 900;
 }
 
-/* Etiqueta "Agotada" arriba a la izquierda de la imagen */
+
+/* ---------- Etiquetas sobre la imagen ---------- */
+
+/* "Agotada": arriba a la izquierda */
 .card-sold-out {
     position: absolute;
     top: 0.6em;
@@ -72,7 +91,7 @@
     text-transform: uppercase;
 }
 
-/* Etiqueta del descuento arriba a la derecha de la imagen */
+/* Porcentaje de descuento: arriba a la derecha, inclinado como el título del catálogo */
 .card-discount {
     position: absolute;
     top: 0.6em;
@@ -82,19 +101,23 @@
     color: black;
     font-weight: 900;
     font-size: 0.95em;
-    transform: skewX(-6deg);
+    transform: skewX(-6deg);   /* inclinación para dar sensación de movimiento */
 }
 
-/* Zona de datos debajo de la imagen */
+
+/* ---------- Datos del producto ---------- */
+
+/* Zona de texto debajo de la imagen */
 .card-info {
     display: flex;
     flex-direction: column;
     gap: 0.6em;
     padding: 1em;
-    flex: 1;
+    flex: 1;                   /* se estira para llenar el alto de la tarjeta:
+                                  así todas las tarjetas de una fila miden lo mismo */
 }
 
-/* Nombre de la categoría en chico */
+/* Categoría: chica, espaciada y atenuada */
 .card-category {
     font-size: 0.75em;
     font-weight: 700;
@@ -108,35 +131,41 @@
     font-size: 1.05em;
     font-weight: 900;
     line-height: 1.25;
-    min-height: 2.5em; /* Reserva 2 líneas para que todas las tarjetas queden alineadas */
+    min-height: 2.5em;         /* reserva 2 líneas (2 × 1.25) para que los nombres
+                                  cortos y largos queden alineados entre tarjetas */
 }
 
-/* Enlace del nombre: se subraya solo al pasar el mouse */
+/* Link del nombre: sin subrayado por defecto */
 .card-name-link {
     color: inherit;
     text-decoration: none;
 }
 
+/* Se subraya solo al pasar el mouse */
 .card-name-link:hover {
     text-decoration: underline;
 }
 
-/* Contorno visible al navegar con el teclado */
+/* Foco visible solo al navegar con teclado (accesibilidad) */
 .card-name-link:focus-visible {
     outline: 0.2em solid white;
-    outline-offset: 0.2em;
+    outline-offset: 0.2em;     /* separa el contorno del texto para que se distinga */
 }
 
-/* Contenedor de precios: se empuja hacia abajo para alinear con el botón */
+
+/* ---------- Precios ---------- */
+
+/* Fila de precios, empujada al fondo de la tarjeta */
 .card-price-box {
-    margin-top: auto;
+    margin-top: auto;          /* consume el espacio libre de arriba: los precios
+                                  y el botón quedan alineados en todas las tarjetas */
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
+    flex-wrap: wrap;           /* si no entran, el precio final baja de línea */
+    align-items: baseline;     /* alinea los dos precios por la base del texto, aunque tengan distinto tamaño */
     gap: 0.2em 0.6em;
 }
 
-/* Precio original tachado (solo cuando hay descuento) */
+/* Precio original tachado (solo aparece cuando hay descuento) */
 .card-price-old {
     font-size: 0.95em;
     font-weight: 700;
@@ -144,13 +173,16 @@
     opacity: 0.6;
 }
 
-/* Precio final */
+/* Precio final, el dato más destacado */
 .card-price {
     font-size: 1.4em;
     font-weight: 900;
 }
 
-/* Botón de agregar */
+
+/* ---------- Botón de agregar al carrito ---------- */
+
+/* Botón blanco con texto negro */
 .card-btn {
     padding: 0.6em 1em;
     border: 0.15em solid white;
@@ -158,22 +190,22 @@
     color: black;
     font-weight: 900;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;  /* suaviza el cambio al hover */
 }
 
-/* Al pasar el mouse se invierten los colores */
+/* Al pasar el mouse se invierten los colores (solo si el botón está habilitado) */
 .card-btn:hover:not(:disabled) {
     background-color: black;
     color: white;
 }
 
-/* Contorno visible al navegar con el teclado */
+/* Foco con teclado, igual que en el nombre */
 .card-btn:focus-visible {
     outline: 0.2em solid white;
     outline-offset: 0.2em;
 }
 
-/* Botón deshabilitado (producto agotado) */
+/* Botón deshabilitado (producto agotado): atenuado y sin click */
 .card-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;

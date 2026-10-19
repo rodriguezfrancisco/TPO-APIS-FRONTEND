@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './views/Home';
 import Products from './views/Products';
@@ -8,20 +7,11 @@ import Product from './views/Product';
 import Register from './views/Register';
 import Profile from './views/Profile';
 import Sell from './views/Sell';
+import useLoginToken from './components/useLoginToken';
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('jwtToken') || '');
-
-  const login = (newToken) => {
-    setToken(newToken);
-    localStorage.setItem('jwtToken', newToken);
-  };
-
-  const logout = () => {
-    setToken('');
-    localStorage.removeItem('jwtToken');
-  };
-
+  const { token, login, logout } = useLoginToken();
+  
   return (
     <>
       <Navbar token={token} onLogout={logout} />

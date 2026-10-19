@@ -1,19 +1,16 @@
-/* Contenedor envolvente con el fondo negro y el padding exterior */
 .catalog-wrapper {
     padding: 2em;
     background-color: black;
     color: white;
-    min-height: 70vh; /* Para que la página no se achique cuando hay pocas figuras */
-    font-size: 1rem; /* Base para em, se ajusta con Media Queries */
+    min-height: 70vh; 
+    font-size: 1rem;
 }
 
-/* Contenedor central: limita el ancho en pantallas grandes */
 .catalog-container {
     max-width: 80em;
     margin: 0 auto;
 }
 
-/* Título con fondo blanco e inclinado, estilo manga */
 .catalog-title {
     display: inline-block;
     margin-bottom: 1em;
@@ -27,7 +24,6 @@
     transform: skewX(-6deg);
 }
 
-/* Fila de filtros: buscador a la izquierda (doble de ancho) y orden a la derecha */
 .catalog-filters {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -35,39 +31,33 @@
     margin-bottom: 1.5em;
 }
 
-/* Formulario del buscador: campo y botón en la misma línea */
 .catalog-search {
     display: flex;
     gap: 0.5em;
 }
 
-/* El campo de texto ocupa todo el espacio que deja el botón */
 .catalog-search .catalog-field {
     flex: 1;
 }
 
-/* Campos de texto y selector (bordes cuadrados estilo cómic) */
 .catalog-field {
     padding: 0.8em 1em;
     border: 0.15em solid white;
     background-color: black;
     color: white;
     font-weight: 700;
-    min-width: 0; /* Permite que el campo se achique dentro del flex */
+    min-width: 0;
 }
 
-/* Color del texto de ayuda del buscador */
 .catalog-field::placeholder {
     color: rgba(255, 255, 255, 0.6);
 }
 
-/* Contorno visible al navegar con el teclado */
 .catalog-field:focus-visible {
     outline: 0.2em solid white;
     outline-offset: 0.2em;
 }
 
-/* Mensajes de estado (cargando, error y sin resultados) con borde punteado */
 .catalog-message {
     padding: 2.5em 1em;
     border: 0.2em dashed white;
@@ -75,14 +65,12 @@
     font-weight: 700;
 }
 
-/* Grilla de tarjetas: la cantidad de columnas se ajusta sola según el ancho */
 .catalog-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
     gap: 1.5em;
 }
 
-/* Paginación centrada debajo de la grilla */
 .catalog-pagination {
     display: flex;
     align-items: center;
@@ -91,12 +79,10 @@
     margin-top: 2.5em;
 }
 
-/* Texto "Página X de Y" */
 .catalog-page-info {
     font-weight: 900;
 }
 
-/* Botones blancos (paginación y Buscar) */
 .catalog-page-btn {
     padding: 0.6em 1.2em;
     border: 0.15em solid white;
@@ -107,25 +93,21 @@
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-/* Al pasar el mouse se invierten los colores */
 .catalog-page-btn:hover:not(:disabled) {
     background-color: black;
     color: white;
 }
 
-/* Contorno visible al navegar con el teclado */
 .catalog-page-btn:focus-visible {
     outline: 0.2em solid white;
     outline-offset: 0.2em;
 }
 
-/* Botón deshabilitado (primera o última página, o mientras carga) */
 .catalog-page-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-/* En celulares: menos padding, filtros apilados y la grilla en 2 columnas */
 @media (max-width: 40em) {
     .catalog-wrapper {
         padding: 1em;

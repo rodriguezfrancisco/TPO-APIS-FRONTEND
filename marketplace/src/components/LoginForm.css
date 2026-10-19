@@ -1,0 +1,119 @@
+/* Contenedor envolvente con el fondo negro: centra el cuadro del login */
+.login-wrapper {
+    padding: 2em;
+    background-color: black;
+    color: white;
+    min-height: 70vh; /* Para que la página no se achique mientras carga */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-size: 1rem; /* Base para em, se ajusta con Media Queries */
+}
+
+/* Cuadro del login: borde blanco con sombra dura estilo cómic */
+.login-box {
+    width: 100%;
+    max-width: 28em;
+    padding: 2em;
+    border: 0.2em solid white;
+    box-shadow: 0.4em 0.4em 0 white;
+}
+
+/* Título */
+.login-title {
+    margin-bottom: 1.2em;
+    font-size: 1.8em;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+}
+
+/* Formulario: un campo debajo del otro */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+
+/* Etiqueta de cada campo */
+.login-label {
+    font-size: 0.85em;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Campos de texto (bordes cuadrados estilo cómic) */
+.login-field {
+    margin-bottom: 0.6em;
+    padding: 0.8em 1em;
+    border: 0.15em solid white;
+    border-radius: 0;
+    background-color: black;
+    color: white;
+    font-weight: 700;
+    min-width: 0; /* Permite que el campo se achique dentro del flex */
+}
+
+/* Contorno visible al navegar con el teclado */
+.login-field:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+/* Cuando el navegador autocompleta, mantiene el fondo negro y el texto blanco */
+.login-field:-webkit-autofill {
+    -webkit-text-fill-color: white;
+    box-shadow: 0 0 0 100em black inset;
+}
+
+/* Mensaje de error con borde punteado */
+.login-error {
+    padding: 0.8em 1em;
+    border: 0.2em dashed white;
+    font-weight: 700;
+}
+
+/* Botón de ingresar */
+.login-btn {
+    margin-top: 0.4em;
+    padding: 0.9em 1.5em;
+    border: 0.15em solid white;
+    border-radius: 0;
+    background-color: white;
+    color: black;
+    font-size: 1.05em;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Al pasar el mouse se invierten los colores */
+.login-btn:hover:not(:disabled) {
+    background-color: black;
+    color: white;
+}
+
+/* Contorno visible al navegar con el teclado */
+.login-btn:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+/* Botón deshabilitado (mientras se envía el formulario) */
+.login-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* En celulares: menos padding */
+@media (max-width: 40em) {
+    .login-wrapper {
+        padding: 1em;
+    }
+
+    .login-box {
+        padding: 1.2em;
+    }
+}

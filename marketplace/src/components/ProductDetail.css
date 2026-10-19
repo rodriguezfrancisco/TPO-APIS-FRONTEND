@@ -1,21 +1,35 @@
-/* Contenedor envolvente con el fondo negro y el padding exterior */
+/* =========================================================
+   DETALLE DE PRODUCTO — estilos
+   Estética: blanco y negro de alto contraste, bordes rectos,
+   sombra dura estilo cómic y trama de puntos tipo manga.
+   Todas las medidas en em/rem para que escalen con la fuente.
+   ========================================================= */
+
+
+/* ---------- Contenedor general ---------- */
+
+/* Fondo de toda la página de detalle */
 .detail-wrapper {
     padding: 2em;
     background-color: black;
     color: white;
-    min-height: 70vh; /* Para que la página no se achique mientras carga */
-    font-size: 1rem; /* Base para em, se ajusta con Media Queries */
+    min-height: 70vh;          /* ocupa al menos el 70% del alto de la pantalla,
+                                  así la página no "salta" mientras carga */
+    font-size: 1rem;           /* base fija: los em de adentro se calculan sobre esto */
 }
 
-/* Contenedor central: limita el ancho en pantallas grandes */
+/* Limita el ancho del contenido y lo centra horizontalmente */
 .detail-container {
     max-width: 70em;
     margin: 0 auto;
 }
 
-/* Link para volver al catálogo */
+
+/* ---------- Botón "volver al catálogo" ---------- */
+
+/* Link con forma de botón: borde blanco, texto en mayúscula */
 .detail-back {
-    display: inline-block;
+    display: inline-block;     /* permite padding y margen, y se ajusta al ancho del texto */
     margin-bottom: 1.5em;
     padding: 0.4em 0.8em;
     border: 0.15em solid white;
@@ -24,7 +38,7 @@
     font-weight: 900;
     text-transform: uppercase;
     text-decoration: none;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;  /* suaviza el cambio al hover */
 }
 
 /* Al pasar el mouse se invierten los colores */
@@ -33,74 +47,87 @@
     color: black;
 }
 
-/* Contorno visible al navegar con el teclado */
+/* Foco visible solo al navegar con teclado (accesibilidad) */
 .detail-back:focus-visible {
     outline: 0.2em solid white;
-    outline-offset: 0.2em;
+    outline-offset: 0.2em;     /* separa el contorno del borde para que se distinga */
 }
 
-/* Mensajes de estado (cargando y error) con borde punteado */
+
+/* ---------- Mensajes (cargando / error) ---------- */
+
 .detail-message {
     padding: 2.5em 1em;
-    border: 0.2em dashed white;
+    border: 0.2em dashed white;    /* borde punteado, mismo recurso que en el catálogo */
     text-align: center;
     font-weight: 700;
 }
 
-/* Dos columnas: galería a la izquierda y datos a la derecha */
+
+/* ---------- Estructura principal ---------- */
+
+/* Dos columnas iguales: galería a la izquierda, datos a la derecha */
 .detail-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2.5em;
-    align-items: start;
+    align-items: start;        /* cada columna mide lo que necesita, no se estiran entre sí */
 }
 
-/* Galería: imagen grande con las miniaturas debajo */
+
+/* ---------- Galería ---------- */
+
+/* Imagen grande arriba y miniaturas debajo */
 .detail-gallery {
     display: flex;
     flex-direction: column;
     gap: 1em;
 }
 
-/* Caja cuadrada de la imagen grande */
+/* Caja cuadrada de la imagen principal */
 .detail-image-box {
-    position: relative; /* Para ubicar las etiquetas sobre la imagen */
-    aspect-ratio: 1 / 1;
+    position: relative;        /* referencia para ubicar las etiquetas encima */
+    aspect-ratio: 1 / 1;       /* siempre cuadrada, sin importar la imagen */
     border: 0.2em solid white;
-    overflow: hidden;
+    overflow: hidden;          /* recorta lo que se salga de la caja */
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: center;   /* centra la imagen o la silueta */
 }
 
-/* Efecto de Screentone (puntos de manga) */
+/* Fondo de trama de puntos (screentone de manga):
+   un degradado radial genera un punto blanco semitransparente
+   y background-size lo repite en una grilla chiquita */
 .halftone-detail {
     background-image: radial-gradient(rgba(255, 255, 255, 0.25) 15%, transparent 16%);
     background-size: 0.4em 0.4em;
     background-position: 0 0, 0.2em 0.2em;
 }
 
-/* La imagen entra completa sin deformarse */
+/* La imagen entra completa sin deformarse ni recortarse */
 .detail-image {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: contain;       /* respeta la proporción original; deja ver la trama a los costados */
 }
 
-/* Silueta de reemplazo (si el producto no tiene imagen) */
+/* Silueta de reemplazo cuando el producto no tiene imagen */
 .detail-placeholder {
     width: 45%;
     aspect-ratio: 1 / 1;
     border: 0.2em solid white;
-    background-color: black;
+    background-color: black;   /* tapa la trama de fondo */
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 5em;
+    font-size: 5em;            /* letra o símbolo grande en el centro */
     font-weight: 900;
 }
 
-/* Etiqueta "Agotada" arriba a la izquierda de la imagen */
+
+/* ---------- Etiquetas sobre la imagen ---------- */
+
+/* "Agotada": arriba a la izquierda */
 .detail-sold-out {
     position: absolute;
     top: 0.8em;
@@ -112,7 +139,7 @@
     text-transform: uppercase;
 }
 
-/* Etiqueta del descuento arriba a la derecha de la imagen */
+/* Porcentaje de descuento: arriba a la derecha */
 .detail-discount {
     position: absolute;
     top: 0.8em;
@@ -124,55 +151,63 @@
     font-weight: 900;
 }
 
-/* Fila de miniaturas */
+
+/* ---------- Miniaturas ---------- */
+
+/* Fila de miniaturas; si no entran, bajan a otra línea */
 .detail-thumbs {
     display: flex;
     flex-wrap: wrap;
     gap: 0.8em;
 }
 
-/* Miniatura: apagada hasta que se elige */
+/* Cada miniatura es un botón cuadrado, atenuado hasta que se elige */
 .detail-thumb {
     width: 4.5em;
     aspect-ratio: 1 / 1;
-    padding: 0;
+    padding: 0;                /* anula el padding por defecto del botón */
     border: 0.15em solid white;
     background-color: black;
     opacity: 0.6;
     cursor: pointer;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.15s ease;    /* suaviza el cambio de opacidad */
 }
 
+/* La imagen de la miniatura llena el botón sin deformarse */
 .detail-thumb img {
     width: 100%;
     height: 100%;
     object-fit: contain;
 }
 
-/* Miniatura elegida: se ve completa y con sombra dura estilo cómic */
+/* La miniatura elegida y la que está bajo el mouse se ven completas */
 .detail-thumb.active,
 .detail-thumb:hover {
     opacity: 1;
 }
 
+/* Solo la elegida suma la sombra dura estilo cómic */
 .detail-thumb.active {
     box-shadow: 0.2em 0.2em 0 white;
 }
 
-/* Contorno visible al navegar con el teclado */
+/* Foco con teclado, igual que en el botón de volver */
 .detail-thumb:focus-visible {
     outline: 0.2em solid white;
     outline-offset: 0.2em;
 }
 
-/* Columna de datos */
+
+/* ---------- Datos del producto ---------- */
+
+/* Columna derecha con toda la información apilada */
 .detail-info {
     display: flex;
     flex-direction: column;
     gap: 1em;
 }
 
-/* Nombre de la categoría en chico */
+/* Categoría: chica, espaciada y atenuada */
 .detail-category {
     font-size: 0.8em;
     font-weight: 700;
@@ -181,23 +216,26 @@
     opacity: 0.7;
 }
 
-/* Nombre del producto */
+/* Nombre del producto: grande, en mayúscula y con líneas apretadas */
 .detail-name {
     font-size: 2.2em;
     font-weight: 900;
-    line-height: 1.1;
+    line-height: 1.1;          /* interlineado chico: los nombres largos no ocupan tanto */
     text-transform: uppercase;
 }
 
-/* Contenedor de precios */
+
+/* ---------- Precios y stock ---------- */
+
+/* Fila de precios */
 .detail-price-box {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
+    flex-wrap: wrap;           /* si no entran, el precio final baja de línea */
+    align-items: baseline;     /* alinea los dos precios por la base del texto, aunque tengan distinto tamaño */
     gap: 0.2em 0.8em;
 }
 
-/* Precio original tachado (solo cuando hay descuento) */
+/* Precio original tachado (solo aparece cuando hay descuento) */
 .detail-price-old {
     font-size: 1.2em;
     font-weight: 700;
@@ -205,34 +243,40 @@
     opacity: 0.6;
 }
 
-/* Precio final */
+/* Precio final, el dato más destacado */
 .detail-price {
     font-size: 2.2em;
     font-weight: 900;
 }
 
-/* Stock disponible */
+/* Cantidad disponible */
 .detail-stock {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
-/* Descripción del producto */
+
+/* ---------- Descripción y vendedor ---------- */
+
+/* Texto largo separado del bloque de precios por una línea blanca */
 .detail-description {
     padding-top: 1em;
     border-top: 0.15em solid white;
-    line-height: 1.6;
-    white-space: pre-line; /* Respeta los saltos de línea de la descripción */
+    line-height: 1.6;          /* interlineado amplio para que se lea cómodo */
+    white-space: pre-line;     /* respeta los saltos de línea escritos en la descripción */
 }
 
-/* Vendedor */
+/* Nombre del vendedor, secundario y atenuado */
 .detail-seller {
     font-size: 0.9em;
     opacity: 0.7;
 }
 
-/* Botón de agregar al carrito */
+
+/* ---------- Botón de agregar al carrito ---------- */
+
+/* Botón principal: blanco con texto negro */
 .detail-btn {
     margin-top: 0.5em;
     padding: 0.9em 1.5em;
@@ -243,38 +287,43 @@
     font-weight: 900;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;
+    transition: background-color 0.15s ease, color 0.15s ease;  /* suaviza el cambio al hover */
 }
 
-/* Al pasar el mouse se invierten los colores */
+/* Al pasar el mouse se invierten los colores (solo si el botón está habilitado) */
 .detail-btn:hover:not(:disabled) {
     background-color: black;
     color: white;
 }
 
-/* Contorno visible al navegar con el teclado */
+/* Foco con teclado, igual que en el resto de la página */
 .detail-btn:focus-visible {
     outline: 0.2em solid white;
     outline-offset: 0.2em;
 }
 
-/* Botón deshabilitado (producto agotado) */
+/* Botón deshabilitado (producto agotado): atenuado y sin click */
 .detail-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
 }
 
-/* En celulares: menos padding y una sola columna */
+
+/* ---------- Responsive: pantallas chicas (≤ 48em ≈ 768px) ---------- */
+
 @media (max-width: 48em) {
+    /* Menos relleno para aprovechar el ancho del celular */
     .detail-wrapper {
         padding: 1em;
     }
 
+    /* Galería y datos pasan a apilarse en una sola columna */
     .detail-grid {
         grid-template-columns: 1fr;
         gap: 1.5em;
     }
 
+    /* Nombre más chico para que no ocupe toda la pantalla */
     .detail-name {
         font-size: 1.7em;
     }

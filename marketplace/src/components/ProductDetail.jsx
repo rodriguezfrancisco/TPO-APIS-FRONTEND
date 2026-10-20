@@ -16,7 +16,7 @@ const formatPrice = (price) => {
     }).format(price);
 };
 
-const ProductDetail = ({ onAdd }) => {
+const ProductDetail = () => {
     // Id del producto que viene en la URL (/products/:id)
     const { id } = useParams();
     // Producto que devuelve el backend

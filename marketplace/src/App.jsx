@@ -8,19 +8,11 @@ import Product from './views/Product';
 import Register from './views/Register';
 import Profile from './views/Profile';
 import Sell from './views/Sell';
-
+import HowToBuy from './views/HowToBuy';
+import Contact from './views/Contact';
+import useLoginToken from './components/useLoginToken';
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('jwtToken') || '');
-
-  const login = (newToken) => {
-    setToken(newToken);
-    localStorage.setItem('jwtToken', newToken);
-  };
-
-  const logout = () => {
-    setToken('');
-    localStorage.removeItem('jwtToken');
-  };
+  const { token, login, logout } = useLoginToken();
 
   return (
     <>
@@ -34,6 +26,8 @@ function App() {
         <Route path="/register" element={<Register onLogin={login} />} />
         <Route path="/profile" element={<Profile onLogin={login} />} />
         <Route path="/sell" element={<Sell />} />
+        <Route path="/how-to-buy" element={<HowToBuy />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
     </>
   );

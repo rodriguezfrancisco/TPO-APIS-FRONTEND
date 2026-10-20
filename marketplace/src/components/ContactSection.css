@@ -1,0 +1,256 @@
+.contact-wrapper {
+    padding: 3em 2em;
+    background-color: black;
+    color: white;
+    min-height: 75vh;
+    font-size: 1rem;
+}
+
+.contact-container {
+    max-width: 80em;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5em;
+}
+
+.contact-header-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5em;
+}
+
+.contact-main-title {
+    font-size: 3.5em;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.contact-halftone-bar {
+    flex: 1;
+    height: 1.4em;
+    background-image:
+        radial-gradient(white 35%, transparent 36%),
+        radial-gradient(white 35%, transparent 36%);
+    background-size: 0.45em 0.45em;
+    background-position: 0 0, 0.225em 0.225em;
+    mask-image: linear-gradient(to right, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 100%);
+    -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 100%);
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 2em;
+    align-items: start;
+}
+
+/* Columna Izquierda */
+.contact-info-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+}
+
+.contact-card {
+    position: relative;
+    border: 0.2em solid white;
+    padding: 2em;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+}
+
+.halftone-card-bg {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.22) 15%, transparent 16%);
+    background-size: 0.4em 0.4em;
+}
+
+.contact-Stamp {
+    align-self: flex-end;
+    font-size: 2em;
+    font-weight: 900;
+    color: black;
+    -webkit-text-stroke: 0.05em white;
+    line-height: 1;
+}
+
+.contact-card-title {
+    font-size: 1.6em;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.contact-card-text {
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.contact-details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.contact-detail-box {
+    border: 0.15em solid white;
+    padding: 1.4em;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35em;
+}
+
+.detail-tag {
+    align-self: flex-start;
+    padding: 0.15em 0.5em;
+    background-color: white;
+    color: black;
+    font-size: 0.75em;
+    font-weight: 900;
+}
+
+.detail-value {
+    font-size: 1.1em;
+    font-weight: 900;
+    margin-top: 0.2em;
+}
+
+.detail-sub {
+    font-size: 0.85em;
+    opacity: 0.75;
+}
+
+/* Columna Derecha: Formulario */
+.contact-form-box {
+    border: 0.2em solid white;
+    box-shadow: 0.4em 0.4em 0 white;
+    padding: 2em;
+    background-color: black;
+}
+
+.contact-form-title {
+    font-size: 1.6em;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    margin-bottom: 1em;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+
+.contact-label {
+    font-size: 0.85em;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.contact-field {
+    padding: 0.8em 1em;
+    border: 0.15em solid white;
+    background-color: black;
+    color: white;
+    font-weight: 700;
+    margin-bottom: 0.5em;
+}
+
+.contact-field::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.contact-field:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+.contact-error {
+    padding: 0.8em;
+    border: 0.15em dashed white;
+    font-weight: 700;
+    text-align: center;
+}
+
+.contact-submit-btn {
+    margin-top: 0.4em;
+    padding: 0.9em 1.5em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-size: 1em;
+    font-weight: 900;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.contact-submit-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+/* Modal de confirmación */
+.contact-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.85);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.3) 18%, transparent 20%);
+    background-size: 0.45em 0.45em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5em;
+}
+
+.contact-modal-box {
+    background-color: black;
+    color: white;
+    max-width: 26em;
+    width: 100%;
+    padding: 2em;
+    border: 0.2em solid white;
+    box-shadow: 0.4em 0.4em 0 white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+}
+
+.contact-modal-badge {
+    width: 1.8em;
+    height: 1.8em;
+    background-color: white;
+    color: black;
+    font-size: 2em;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-modal-title {
+    font-size: 1.5em;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.contact-modal-text {
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+@media (max-width: 55em) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+    .contact-main-title {
+        font-size: 2.4em;
+    }
+}

@@ -1,0 +1,276 @@
+.howto-page {
+    background-color: black;
+    color: white;
+    font-size: 1rem;
+}
+
+.howto-wrapper {
+    padding: 3em 2em;
+}
+
+.howto-container {
+    max-width: 80em;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3em;
+}
+
+/* Cabecera con barra de trama de puntos */
+.howto-header-row {
+    display: flex;
+    align-items: center;
+    gap: 1.5em;
+}
+
+.howto-main-title {
+    font-size: 3.5em;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.howto-halftone-bar {
+    flex: 1;
+    height: 1.4em;
+    background-image:
+         radial-gradient(white 35%, transparent 36%),
+        radial-gradient(white 35%, transparent 36%);
+    background-size: 0.45em 0.45em;
+    background-position: 0 0, 0.225em 0.225em;
+    mask-image: linear-gradient(to right, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 100%);
+    -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 100%);
+}
+
+/* Grilla de las 3 viñetas */
+.howto-steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2em;
+}
+
+.howto-panel {
+    position: relative;
+    min-height: 22em;
+    padding: 2em;
+    border: 0.2em solid white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.howto-panel:hover {
+    transform: translate(-0.2em, -0.2em);
+    box-shadow: 0.4em 0.4em 0 white;
+}
+
+/* Fondos de cada viñeta */
+.panel-one {
+    background: repeating-conic-gradient(
+        from 140deg at 85% 85%,
+        black 0deg 4deg,
+        rgba(255, 255, 255, 0.85) 4deg 6deg,
+        black 6deg 11deg
+    );
+}
+
+.panel-two {
+    background-color: black;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.3) 20%, transparent 22%);
+    background-size: 0.45em 0.45em;
+}
+
+.panel-three {
+    background-color: white;
+    color: black;
+}
+
+/* Números grandes contorneados (1, 2, 3) */
+.panel-number {
+    font-size: 5.5em;
+    font-weight: 900;
+    line-height: 0.9;
+    margin-bottom: 0.15em;
+    z-index: 2;
+    user-select: none;
+}
+
+.number-light {
+    color: black;
+    -webkit-text-stroke: 0.04em white;
+}
+
+.number-dark {
+    color: white;
+    -webkit-text-stroke: 0.04em black;
+}
+
+/* Cajas internas de texto */
+.panel-card {
+    padding: 1.4em;
+    max-width: 19em;
+    z-index: 2;
+}
+
+.card-dark {
+    background-color: black;
+    color: white;
+    border: 0.15em solid white;
+}
+
+.card-light {
+    background-color: white;
+    color: black;
+    border: 0.15em solid black;
+}
+
+.panel-title {
+    font-size: 1.8em;
+    font-weight: 900;
+    margin-bottom: 0.3em;
+}
+
+.panel-text {
+    font-size: 0.95em;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+/* Grilla de información complementaria */
+.howto-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2em;
+}
+
+.howto-info-box {
+    border: 0.15em solid white;
+    padding: 1.6em;
+    background-color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6em;
+}
+
+.info-badge {
+    align-self: flex-start;
+    padding: 0.15em 0.6em;
+    background-color: white;
+    color: black;
+    font-size: 0.75em;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+}
+
+.info-title {
+    font-size: 1.25em;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.info-desc {
+    font-size: 0.9em;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+/* Preguntas frecuentes */
+.howto-faq-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+}
+
+.howto-subtitle {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 0.2em 0.6em;
+    background-color: white;
+    color: black;
+    font-size: 1.8em;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    transform: skewX(-6deg);
+}
+
+.howto-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+}
+
+.faq-item {
+    border: 0.15em solid white;
+    background-color: black;
+}
+
+.faq-question {
+    width: 100%;
+    padding: 1em 1.2em;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1em;
+    font-weight: 900;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.faq-question:hover {
+    background-color: #141414;
+}
+
+.faq-icon {
+    font-size: 1.4em;
+    line-height: 1;
+}
+
+.faq-answer {
+    padding: 0 1.2em 1.2em 1.2em;
+    border-top: 0.1em dashed rgba(255, 255, 255, 0.4);
+    padding-top: 0.9em;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+/* Botón final al catálogo */
+.howto-cta-row {
+    display: flex;
+    justify-content: center;
+}
+
+.howto-cta-btn {
+    padding: 0.9em 2em;
+    background-color: white;
+    color: black;
+    border: 0.2em solid white;
+    font-size: 1.1em;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.howto-cta-btn:hover {
+    background-color: black;
+    color: white;
+}
+
+
+
+
+@media (max-width: 55em) {
+    .howto-steps-grid,
+    .howto-info-grid {
+        grid-template-columns: 1fr;
+    }
+    .howto-main-title {
+        font-size: 2.4em;
+    }
+}

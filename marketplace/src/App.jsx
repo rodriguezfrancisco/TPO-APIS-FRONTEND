@@ -10,7 +10,7 @@ import Profile from './views/Profile';
 import Sell from './views/Sell';
 import HowToBuy from './views/HowToBuy';
 import Contact from './views/Contact';
-import useLoginToken from './components/UseLoginToken';
+import UseLoginToken from './components/UseLoginToken';
 
 function App() {
   const { token, login, logout } = useLoginToken();

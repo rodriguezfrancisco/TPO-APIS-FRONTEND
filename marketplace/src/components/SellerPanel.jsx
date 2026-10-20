@@ -237,7 +237,7 @@ const SellerPanel = () => {
                     
                     {/* Columna 1: Formulario de Alta de Producto */}
                     <div className="seller-box">
-                        <h3 className="seller-subtitle">Publicar nueva figura</h3>
+                        <h3 className="seller-subtitle">Publicar nuevo producto</h3>
 
                         {/* Si es ADMIN, puede crear categorías rápido */}
                         {currentUser?.role === 'ADMIN' && (
@@ -350,7 +350,7 @@ const SellerPanel = () => {
                                 className="seller-btn-primary"
                                 disabled={submitting || categories.length === 0}
                             >
-                                {submitting ? 'Publicando...' : 'Publicar figura'}
+                                {submitting ? 'Publicando...' : 'Publicar producto'}
                             </button>
                         </form>
                     </div>

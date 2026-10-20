@@ -52,7 +52,7 @@ const ProductDetail = ({ onAdd }) => {
     const hasDiscount = product && product.discountPercentage > 0;
 
     const navigate = useNavigate();
- const location = useLocation();
+    const location = useLocation();
 
  const handleAddToCart = (product) => {
      const token = localStorage.getItem('jwtToken');
@@ -159,11 +159,10 @@ const ProductDetail = ({ onAdd }) => {
                             {product.description && <p className="detail-description">{product.description}</p>}
                             {product.sellerUsername && <p className="detail-seller">Vendido por {product.sellerUsername}</p>}
                             {/* Botón de agregar: solo aparece si el componente padre le pasa onAdd */}
-                            {onAdd && (
-                                <button type="button" className="detail-btn" disabled={soldOut} onClick={() => handleAddToCart(product)}>
-                                        {soldOut ? 'Agotada' : 'Agregar al carrito'}
-                                    </button>
-                            )}
+    
+                            <button type="button" className="detail-btn" disabled={soldOut} onClick={() => handleAddToCart(product)}>
+                                    {soldOut ? 'Agotada' : 'Agregar al carrito'}
+                            </button>
                         </div>
                     </div>
                 )}

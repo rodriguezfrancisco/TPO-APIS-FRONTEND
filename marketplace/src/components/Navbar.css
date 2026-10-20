@@ -18,6 +18,11 @@
     align-items: center;
     gap: 2em; /* Garantiza separación mínima entre el buscador y los links */
     width: 100%;
+
+    /* esto para que la barra quede siempre visible */
+    position: sticky;
+    top: 0;
+    z-index: 50; /* Z-index 50 la mantiene por encima de los productos, pero por debajo de los modales (que tienen 100) */
 }
 
 /* Divisiones de la barra: le damos menos ancho vacío al logo y más a la botonera */

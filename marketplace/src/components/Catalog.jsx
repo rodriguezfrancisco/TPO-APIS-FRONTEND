@@ -25,6 +25,23 @@ const Catalog = () => {
     // Orden elegido: default, asc o desc
     const [sort, setSort] = useState('default');
 
+    const navigate = useNavigate();
+    const location = useLocation();
+    
+    // Escucha si la Navbar nos manda una palabra para buscar
+    useEffect(() => {
+        if (location.state?.searchKeyword) {
+            const word = location.state.searchKeyword;
+            // Actualizamos los estados visuales y lógicos de la búsqueda
+            setSearch(word);
+            setKeyword(word);
+            setPage(0);
+            
+            // Limpiamos el paquete oculto para que no vuelva a buscar si recargamos la página (F5)
+            navigate(location.pathname, { replace: true, state: {} });
+        }
+    }, [location.state, navigate, location.pathname]);
+
     // Hacemos el GET al backend cada vez que cambia la página o la búsqueda
     useEffect(()=>{
         // Armamos la URL con la paginación y, si hay búsqueda, el keyword
@@ -85,8 +102,7 @@ const Catalog = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const navigate = useNavigate();
-    const location = useLocation();
+    
 
     const handleAddToCart = (product) => {
         const token = localStorage.getItem('jwtToken');
@@ -116,12 +132,13 @@ const Catalog = () => {
                 // Enviamos el carrito devuelto por el POST a la Navbar y abrimos el modal
                 navigate(location.pathname, {
                     replace: true,
-                    state: { updatedCart, openCart: true, timestamp: Date.now() }
+                    state: { updatedCart, timestamp: Date.now() }
                 });
             }
         })
         .catch((error) => console.error("Error al agregar al carrito: ", error));
     };
+    
 
     return (
         <section className="catalog-wrapper">

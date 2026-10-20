@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom'; // Agregamos useNavigate
 import CartModal from './CartModal';
 import './Navbar.css';
 
@@ -7,7 +7,13 @@ const URL = 'http://localhost:8080';
 
 const Navbar = ({ token, onLogout }) => {
     const location = useLocation();
+    const navigate = useNavigate(); 
+
+    // Estado para guardar lo que el usuario escribe en la barra
+    const [searchTerm, setSearchTerm] = useState('');
+
     const [cart, setCart] = useState({ items: [], total: 0 });
+    
     const [isCartOpen, setIsCartOpen] = useState(false);
 
     // 1. Etapa de montaje / cambio de usuario: traemos el carrito con GET una sola vez
@@ -38,8 +44,17 @@ const Navbar = ({ token, onLogout }) => {
         }
     }, [location.state]);
 
-    const cartItemsCount = (cart?.items || []).reduce((acc, item) => acc + item.quantity, 0);
+// Función que se ejecuta al apretar Enter en el buscador
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        if (searchTerm.trim() !== '') {
+            // Navegamos al catálogo pasándole la palabra clave oculta en el estado
+            navigate('/products', { state: { searchKeyword: searchTerm.trim() } });
+            setSearchTerm(''); // Limpiamos la barra después de buscar
+        }
+    };
 
+    const cartItemsCount = (cart?.items || []).reduce((acc, item) => acc + item.quantity, 0);
     return (
         <>
             <nav className="navbar bg-black text-white custom-navbar">
@@ -59,11 +74,16 @@ const Navbar = ({ token, onLogout }) => {
 
                 {/* 2. Sección Centro (Buscador) */}
                 <div className="nav-section justify-center hide-on-mobile">
-                    <input 
-                        type="text" 
-                        placeholder="Buscar personaje o figura..." 
-                        className="input bg-black text-white search-input" 
-                    />
+                    {/* Lo envolvemos en un form para escuchar el evento onSubmit (Enter) */}
+                    <form onSubmit={handleSearchSubmit} className="w-full max-w-lg">
+                        <input 
+                            type="text" 
+                            placeholder="Buscar personaje o figura..." 
+                            className="input bg-black text-white search-input w-full" 
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </form>
                 </div>
 
                 {/* 3. Sección Derecha (Navegación y Carrito) */}

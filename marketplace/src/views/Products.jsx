@@ -1,8 +1,8 @@
 import Catalog from "../components/Catalog";
 
-function Products() {
+function Products({ token }) {
   return(
-    <Catalog></Catalog>
+    <Catalog token={token}></Catalog>
   )
 }
 

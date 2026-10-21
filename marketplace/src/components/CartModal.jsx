@@ -106,7 +106,6 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
         .finally(() => setLoading(false));
     };
 
-    // Confirmar compra (Checkout)
     const handleCheckout = (e) => {
         e.preventDefault();
         setLoading(true);
@@ -120,8 +119,13 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
             },
             body: JSON.stringify({ paymentMethod, deliveryMethod })
         })
-        .then((res) => {
-            if (!res.ok) throw new Error('No se pudo procesar la compra. Revisá el stock disponible.');
+        .then(async (res) => {
+            if (!res.ok) {
+                // Capturamos el error real del backend en lugar de hardcodear el del stock
+                const errData = await res.json().catch(() => null);
+                const errorMessage = errData?.message || `Error del servidor (${res.status}). Mirá la terminal de Spring Boot para más detalles.`;
+                throw new Error(errorMessage);
+            }
             return res.json();
         })
         .then((orderData) => {

@@ -33,14 +33,22 @@ const Navbar = ({ token, onLogout }) => {
         .catch((error) => console.error("Error al cargar el carrito: ", error));
     }, [token]);
 
-    // 2. Si Catalog o ProductDetail agregaron un producto, recibimos el carrito ya actualizado
-    // sin necesidad de hacer otro GET al backend
+    // 2. Recibimos actualizaciones de carrito o productos eliminados sin hacer otro GET
     useEffect(() => {
         if (location.state?.updatedCart) {
             setCart(location.state.updatedCart);
             if (location.state.openCart) {
                 setIsCartOpen(true);
             }
+        }
+        if (location.state?.removedProductId) {
+            setCart((prevCart) => {
+                const filteredItems = (prevCart?.items || []).filter(
+                    (item) => item.productId !== location.state.removedProductId
+                );
+                const newTotal = filteredItems.reduce((acc, item) => acc + item.subtotal, 0);
+                return { ...prevCart, items: filteredItems, total: newTotal };
+            });
         }
     }, [location.state]);
 

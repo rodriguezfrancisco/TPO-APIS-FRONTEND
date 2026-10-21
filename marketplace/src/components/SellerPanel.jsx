@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './SellerPanel.css';
 
 const URL = 'http://localhost:8080';
@@ -15,6 +15,7 @@ const getUsernameFromToken = (token) => {
 
 const SellerPanel = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const token = localStorage.getItem('jwtToken');
 
     const [currentUser, setCurrentUser] = useState(null);
@@ -22,7 +23,6 @@ const SellerPanel = () => {
     const [myProducts, setMyProducts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Estados del formulario de Nueva Figura
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
@@ -31,15 +31,11 @@ const SellerPanel = () => {
     const [categoryId, setCategoryId] = useState('');
     const [files, setFiles] = useState([]);
 
-    // Estado para crear categoría (solo ADMIN)
     const [newCategoryName, setNewCategoryName] = useState('');
-
-    // Mensajes de feedback
     const [feedback, setFeedback] = useState(null);
     const [error, setError] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
-    // Etapa de montaje: cargamos usuario, categorías y productos propios
     useEffect(() => {
         if (!token) {
             navigate('/login');
@@ -51,9 +47,9 @@ const SellerPanel = () => {
         Promise.all([
             fetch(`${URL}/users`, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json()),
             fetch(`${URL}/categories`, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json()),
-            fetch(`${URL}/products?page=0&size=100`).then((r) => r.json())
+            fetch(`${URL}/products/seller`, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json())
         ])
-        .then(([usersData, categoriesData, productsData]) => {
+        .then(([usersData, categoriesData, sellerProductsData]) => {
             const foundUser = (usersData.content || []).find(
                 (u) => u.username === sub || u.email === sub
             );
@@ -65,12 +61,8 @@ const SellerPanel = () => {
                 setCategoryId(catList[0].id);
             }
 
-            const allProducts = productsData.content || [];
-            if (foundUser) {
-                const filtered = foundUser.role === 'ADMIN'
-                    ? allProducts
-                    : allProducts.filter((p) => p.sellerUsername === foundUser.username);
-                setMyProducts(filtered);
+            if (Array.isArray(sellerProductsData)) {
+                setMyProducts(sellerProductsData);
             }
         })
         .catch((err) => {
@@ -80,7 +72,6 @@ const SellerPanel = () => {
         .finally(() => setLoading(false));
     }, [token, navigate]);
 
-    // Crear nueva categoría (para ADMIN)
     const handleCreateCategory = (e) => {
         e.preventDefault();
         if (!newCategoryName.trim()) return;
@@ -106,7 +97,6 @@ const SellerPanel = () => {
         .catch((err) => setError(err.message));
     };
 
-    // Publicar un nuevo producto + subir sus fotos
     const handleCreateProduct = (e) => {
         e.preventDefault();
         setSubmitting(true);
@@ -132,12 +122,11 @@ const SellerPanel = () => {
         })
         .then((response) => {
             if (!response.ok) {
-                throw new Error('No se pudo publicar la figura. Revisá que el nombre no esté repetido.');
+                throw new Error('Ya existe una figura con ese nombre (revisá tus publicaciones pausadas).');
             }
             return response.json();
         })
         .then((createdProduct) => {
-            // Si adjuntó fotos, las subimos a POST /images
             const uploadPromises = Array.from(files).map((file) => {
                 const formData = new FormData();
                 formData.append('productId', createdProduct.id);
@@ -154,7 +143,6 @@ const SellerPanel = () => {
             return Promise.all(uploadPromises).then(() => createdProduct);
         })
         .then((createdProduct) => {
-            // Agregamos el producto al estado local con spread operator (sin hacer otro GET)
             setMyProducts([...myProducts, createdProduct]);
             setName('');
             setDescription('');
@@ -168,7 +156,6 @@ const SellerPanel = () => {
         .finally(() => setSubmitting(false));
     };
 
-    // Actualizar stock, precio o descuento de un producto (PATCH /products/{id})
     const handleUpdateProduct = (productId, updatedFields) => {
         setError(null);
         setFeedback(null);
@@ -186,16 +173,18 @@ const SellerPanel = () => {
             return res.json();
         })
         .then((updatedProduct) => {
-            // Reemplazamos localmente en el array usando .map()
             setMyProducts(
                 myProducts.map((p) => (p.id === productId ? updatedProduct : p))
             );
-            setFeedback(`"${updatedProduct.name}" actualizado.`);
+            setFeedback(
+                updatedFields.state === true
+                    ? `"${updatedProduct.name}" volvió a publicarse en el catálogo.`
+                    : `"${updatedProduct.name}" actualizado.`
+            );
         })
         .catch((err) => setError(err.message));
     };
 
-    // Eliminar / deshabilitar un producto (PUT /products/{id})
     const handleDisableProduct = (productId) => {
         setError(null);
         setFeedback(null);
@@ -205,13 +194,24 @@ const SellerPanel = () => {
             headers: { Authorization: `Bearer ${token}` }
         })
         .then((res) => {
-            if (!res.ok) throw new Error('No se pudo eliminar la publicación.');
-            // Quitamos el producto de la vista usando .filter() sin hacer GET
-            setMyProducts(myProducts.filter((p) => p.id !== productId));
-            setFeedback('Publicación eliminada correctamente.');
+            if (!res.ok) throw new Error('No se pudo pausar la publicación.');
+            // Marcamos state: false localmente con .map() sin hacer otro GET
+            setMyProducts(
+                myProducts.map((p) => (p.id === productId ? { ...p, state: false } : p))
+            );
+            setFeedback('Publicación pausada y retirada de los carritos.');
+
+            // Avisamos a la Navbar por si el mismo usuario la tenía en su carrito
+            navigate(location.pathname, {
+                replace: true,
+                state: { removedProductId: productId, timestamp: Date.now() }
+            });
         })
         .catch((err) => setError(err.message));
     };
+
+    const activeProducts = myProducts.filter((p) => p.state !== false);
+    const inactiveProducts = myProducts.filter((p) => p.state === false);
 
     if (!loading && currentUser && currentUser.role === 'BUYER') {
         return (
@@ -235,11 +235,10 @@ const SellerPanel = () => {
 
                 <div className="seller-grid">
                     
-                    {/* Columna 1: Formulario de Alta de Producto */}
+                    {/* Columna 1: Formulario de Alta */}
                     <div className="seller-box">
-                        <h3 className="seller-subtitle">Publicar nuevo producto</h3>
+                        <h3 className="seller-subtitle">Publicar nueva figura</h3>
 
-                        {/* Si es ADMIN, puede crear categorías rápido */}
                         {currentUser?.role === 'ADMIN' && (
                             <form className="seller-cat-form" onSubmit={handleCreateCategory}>
                                 <input
@@ -350,20 +349,22 @@ const SellerPanel = () => {
                                 className="seller-btn-primary"
                                 disabled={submitting || categories.length === 0}
                             >
-                                {submitting ? 'Publicando...' : 'Publicar producto'}
+                                {submitting ? 'Publicando...' : 'Publicar figura'}
                             </button>
                         </form>
                     </div>
 
-                    {/* Columna 2: Gestión de productos publicados */}
+                    {/* Columna 2: Publicaciones Activas y Eliminadas/Pausadas */}
                     <div className="seller-box">
-                        <h3 className="seller-subtitle">Mis publicaciones ({myProducts.length})</h3>
+                        <h3 className="seller-subtitle">
+                            Publicaciones activas ({activeProducts.length})
+                        </h3>
 
-                        {myProducts.length === 0 ? (
-                            <p className="seller-message">Todavía no tenés figuras publicadas.</p>
+                        {activeProducts.length === 0 ? (
+                            <p className="seller-message">No tenés figuras activas en este momento.</p>
                         ) : (
                             <div className="seller-products-list">
-                                {myProducts.map((prod) => (
+                                {activeProducts.map((prod) => (
                                     <SellerProductRow
                                         key={prod.id}
                                         product={prod}
@@ -373,6 +374,25 @@ const SellerPanel = () => {
                                 ))}
                             </div>
                         )}
+
+                        {/* Sección de Publicaciones Eliminadas para reactivar en 1 clic */}
+                        {inactiveProducts.length > 0 && (
+                            <>
+                                <h3 className="seller-subtitle">
+                                    Publicaciones eliminadas ({inactiveProducts.length})
+                                </h3>
+                                <div className="seller-products-list">
+                                    {inactiveProducts.map((prod) => (
+                                        <SellerProductRow
+                                            key={prod.id}
+                                            product={prod}
+                                            onUpdate={handleUpdateProduct}
+                                            onDelete={handleDisableProduct}
+                                        />
+                                    ))}
+                                </div>
+                            </>
+                        )}
                     </div>
 
                 </div>
@@ -381,13 +401,13 @@ const SellerPanel = () => {
     );
 };
 
-// Subcomponente para gestionar el stock, precio y descuento de cada figura individual
 const SellerProductRow = ({ product, onUpdate, onDelete }) => {
     const [price, setPrice] = useState(product.price);
     const [stock, setStock] = useState(product.stock);
     const [discount, setDiscount] = useState(product.discountPercentage || 0);
 
     const hasImage = product.imageIds && product.imageIds.length > 0;
+    const isInactive = product.state === false;
 
     const handleSave = (e) => {
         e.preventDefault();
@@ -398,8 +418,17 @@ const SellerProductRow = ({ product, onUpdate, onDelete }) => {
         });
     };
 
+    const handleRepublish = () => {
+        onUpdate(product.id, {
+            price: Number(price),
+            stock: Number(stock),
+            discount_percentage: Number(discount),
+            state: true
+        });
+    };
+
     return (
-        <form className="seller-item-card" onSubmit={handleSave}>
+        <form className={isInactive ? 'seller-item-card inactive-card' : 'seller-item-card'} onSubmit={handleSave}>
             <div className="seller-item-header">
                 <div className="seller-item-thumb">
                     {hasImage ? (
@@ -410,15 +439,28 @@ const SellerProductRow = ({ product, onUpdate, onDelete }) => {
                 </div>
                 <div className="seller-item-title-box">
                     <h4 className="seller-item-name">{product.name}</h4>
-                    <span className="seller-item-cat">{product.categoryName}</span>
+                    <span className="seller-item-cat">
+                        {product.categoryName} {isInactive && '• ELIMINADA'}
+                    </span>
                 </div>
-                <button
-                    type="button"
-                    className="seller-btn-danger"
-                    onClick={() => onDelete(product.id)}
-                >
-                    Eliminar
-                </button>
+
+                {isInactive ? (
+                    <button
+                        type="button"
+                        className="seller-btn-secondary"
+                        onClick={handleRepublish}
+                    >
+                        Volver a publicar
+                    </button>
+                ) : (
+                    <button
+                        type="button"
+                        className="seller-btn-danger"
+                        onClick={() => onDelete(product.id)}
+                    >
+                        Eliminar
+                    </button>
+                )}
             </div>
 
             <div className="seller-row-3">
@@ -454,9 +496,11 @@ const SellerProductRow = ({ product, onUpdate, onDelete }) => {
                 </div>
             </div>
 
-            <button type="submit" className="seller-btn-secondary">
-                Guardar cambios de stock / descuento
-            </button>
+            {!isInactive && (
+                <button type="submit" className="seller-btn-secondary">
+                    Guardar cambios de stock / descuento
+                </button>
+            )}
         </form>
     );
 };

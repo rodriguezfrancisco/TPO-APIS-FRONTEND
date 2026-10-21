@@ -235,3 +235,8 @@
         grid-template-columns: 1fr;
     }
 }
+
+.inactive-card {
+    border-style: dashed;
+    opacity: 0.75;
+}

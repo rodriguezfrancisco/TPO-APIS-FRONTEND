@@ -5,7 +5,6 @@
    Todas las medidas en em/rem para que escalen con la fuente.
    ========================================================= */
 
-
 /* ---------- Contenedor general ---------- */
 
 /* Fondo de toda la sección del catálogo */
@@ -24,7 +23,6 @@
     margin: 0 auto;
 }
 
-
 /* ---------- Título ---------- */
 
 /* Título tipo "etiqueta": caja blanca con texto negro, inclinada */
@@ -41,26 +39,32 @@
     transform: skewX(-6deg);   /* inclina toda la caja para dar sensación de movimiento */
 }
 
+/* ---------- Filtros (búsqueda, categoría, precio y orden) ---------- */
 
-/* ---------- Filtros (búsqueda + select) ---------- */
-
-/* Dos columnas: la búsqueda ocupa el doble que el otro filtro */
+/* Dos columnas: el formulario de filtros ocupa el triple que el selector de orden */
 .catalog-filters {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 3fr 1fr;
     gap: 1em;
+    align-items: start;        /* el orden no se estira cuando el formulario ocupa dos líneas */
     margin-bottom: 1.5em;
 }
 
-/* Fila con el input de búsqueda y su botón */
+/* Formulario de filtros: los campos se acomodan en varias líneas si no entran */
 .catalog-search {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5em;
 }
 
-/* Dentro de la búsqueda, el input se estira para llenar el espacio libre */
+/* Cada campo crece para ocupar el espacio libre de su línea */
 .catalog-search .catalog-field {
-    flex: 1;
+    flex: 1 1 8em;
+}
+
+/* El buscador de texto es más ancho que el resto de los campos */
+.catalog-search .catalog-search-input {
+    flex: 3 1 14em;
 }
 
 /* Estilo común de inputs y selects */
@@ -85,6 +89,18 @@
     outline-offset: 0.2em;     /* separa el contorno del borde para que se distinga */
 }
 
+/* Los campos de precio usan los controles oscuros del navegador (flechas incluidas) */
+.catalog-field[type="number"] {
+    color-scheme: dark;
+}
+
+/* Aviso de filtros inválidos (por ejemplo, precio mínimo mayor al máximo) */
+.catalog-filter-error {
+    margin-bottom: 1.5em;
+    padding: 0.6em 1em;
+    border: 0.15em dashed white;
+    font-weight: 700;
+}
 
 /* ---------- Mensajes (cargando / sin resultados / error) ---------- */
 
@@ -95,7 +111,6 @@
     font-weight: 700;
 }
 
-
 /* ---------- Grilla de productos ---------- */
 
 /* Grilla responsive: crea tantas columnas como entren,
@@ -105,7 +120,6 @@
     grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
     gap: 1.5em;
 }
-
 
 /* ---------- Paginación ---------- */
 
@@ -152,6 +166,17 @@
     cursor: not-allowed;
 }
 
+/* Botón Limpiar: versión con contorno (negro con borde blanco) */
+.catalog-clear-btn {
+    background-color: black;
+    color: white;
+}
+
+/* Al pasar el mouse se invierten los colores */
+.catalog-clear-btn:hover:not(:disabled) {
+    background-color: white;
+    color: black;
+}
 
 /* ---------- Responsive: pantallas chicas (≤ 40em ≈ 640px) ---------- */
 

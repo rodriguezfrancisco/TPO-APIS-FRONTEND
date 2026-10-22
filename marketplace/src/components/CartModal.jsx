@@ -123,7 +123,7 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
             if (!res.ok) {
                 // Capturamos el error real del backend en lugar de hardcodear el del stock
                 const errData = await res.json().catch(() => null);
-                const errorMessage = errData?.message || `Error del servidor (${res.status}). Mirá la terminal de Spring Boot para más detalles.`;
+                const errorMessage = errData?.message || `Error del servidor (${res.status}). No se pudo procesar la compra. Revisá el stock disponible.`;
                 throw new Error(errorMessage);
             }
             return res.json();

@@ -94,6 +94,14 @@ const Navbar = ({ token, onLogout }) => {
     };
 
     const cartItemsCount = (cart?.items || []).reduce((acc, item) => acc + item.quantity, 0);
+
+    const handleCartChange = (newCart) => {
+    setCart(newCart);
+    navigate(location.pathname, {
+        replace: true,
+        state: { updatedCart: newCart, timestamp: Date.now() }
+    });
+};
     return (
         <>
             <nav className="navbar bg-black text-white custom-navbar">
@@ -170,7 +178,7 @@ const Navbar = ({ token, onLogout }) => {
                 isOpen={isCartOpen}
                 onClose={() => setIsCartOpen(false)}
                 cart={cart}
-                setCart={setCart}
+                setCart={handleCartChange}
                 token={token}
             />
         </>

@@ -274,11 +274,75 @@
 }
 
 
-/* ---------- Botón de agregar al carrito ---------- */
-
-/* Botón principal: blanco con texto negro */
-.detail-btn {
+/* ---------- Selector de cantidad y botón de agregar ---------- */
+/* Fila con el selector (- 1 +) a la izquierda y el botón Agregar a la derecha */
+.detail-actions {
     margin-top: 0.5em;
+    display: flex;
+    align-items: stretch;
+    gap: 1em;
+    flex-wrap: wrap;
+}
+
+/* Caja del selector (- 1 +) con el mismo estilo que en el carrito */
+.detail-qty-box {
+    display: flex;
+    align-items: center;
+    border: 0.15em solid white;
+    background-color: black;
+}
+
+.detail-qty-btn {
+    width: 2.8em;
+    height: 100%;
+    min-height: 2.8em;
+    background-color: black;
+    color: white;
+    border: none;
+    font-size: 1.1em;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.detail-qty-btn:hover:not(:disabled) {
+    background-color: white;
+    color: black;
+}
+
+.detail-qty-btn:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: -0.2em;
+}
+
+.detail-qty-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.detail-qty-value {
+    min-width: 2.8em;
+    height: 100%;
+    border-left: 0.15em solid white;
+    border-right: 0.15em solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1em;
+    font-weight: 900;
+    padding: 0 0.4em;
+}
+
+/* Contenedor relativo del botón para ubicar el cuadrado de cantidad en la esquina */
+.detail-btn-container {
+    position: relative;
+    flex: 1;
+    display: flex;
+}
+
+/* Botón principal: ocupa todo el ancho de su contenedor */
+.detail-btn {
+    width: 100%;
     padding: 0.9em 1.5em;
     border: 0.15em solid white;
     background-color: white;
@@ -287,7 +351,7 @@
     font-weight: 900;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background-color 0.15s ease, color 0.15s ease;  /* suaviza el cambio al hover */
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 /* Al pasar el mouse se invierten los colores (solo si el botón está habilitado) */
@@ -308,6 +372,26 @@
     cursor: not-allowed;
 }
 
+/* Cuadrado de cantidad en el carrito sobre la esquina superior derecha del botón */
+.detail-cart-badge {
+    position: absolute;
+    top: -0.6em;
+    right: -0.6em;
+    background-color: black;
+    color: white;
+    border: 0.15em solid white;
+    border-radius: 0;
+    font-weight: bold;
+    font-size: 0.85em;
+    height: 1.6em;
+    min-width: 1.6em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.25em;
+    z-index: 10;
+    line-height: 1;
+}
 
 /* ---------- Responsive: pantallas chicas (≤ 48em ≈ 768px) ---------- */
 

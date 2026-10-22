@@ -16,6 +16,8 @@ const sameFilters = (a, b) => {
 };
 
 const Catalog = ({ token }) => {
+    // Ítems actuales del carrito para mostrar la cantidad en cada ProductCard
+    const [cartItems, setCartItems] = useState([]);
     // Productos de la página actual que devuelve el backend
     const [products, setProducts] = useState([]);
     // Número de página (el backend empieza a contar desde 0)
@@ -46,17 +48,17 @@ const Catalog = ({ token }) => {
     
     // Escucha si la Navbar nos manda una palabra para buscar
     useEffect(() => {
-        if (location.state?.searchKeyword) {
-            const word = location.state.searchKeyword;
-            // Actualizamos los estados visuales y lógicos de la búsqueda
-            setSearch(word);
-            setFilters((prev) => ({ ...prev, keyword: word }));
-            setPage(0);
-            
-            // Limpiamos el paquete oculto para que no vuelva a buscar si recargamos la página (F5)
-            navigate(location.pathname, { replace: true, state: {} });
-        }
-    }, [location.state, navigate, location.pathname]);
+    if (location.state?.searchKeyword) {
+        const word = location.state.searchKeyword;
+        setSearch(word);
+        setFilters((prev) => ({ ...prev, keyword: word }));
+        setPage(0);
+        navigate(location.pathname, { replace: true, state: {} });
+    }
+    if (location.state?.updatedCart) {
+        setCartItems(location.state.updatedCart.items || []);
+    }
+}, [location.state, navigate, location.pathname]);
 
     // Pedimos las categorías para el selector cada vez que cambia la sesión
     useEffect(()=>{
@@ -236,6 +238,18 @@ const Catalog = ({ token }) => {
         });
     };
     
+    useEffect(() => {
+    if (!token) {
+        setCartItems([]);
+        return;
+    }
+    fetch(`${URL}/carts`, { headers: { Authorization: `Bearer ${token}` } })
+    .then((response) => (response.ok ? response.json() : null))
+    .then((data) => {
+        if (data && data.items) setCartItems(data.items);
+    })
+    .catch((err) => console.error("Error al obtener carrito en catálogo: ", err));
+}, [token]);
 
     return (
         <section className="catalog-wrapper">
@@ -329,9 +343,20 @@ const Catalog = ({ token }) => {
                 {/* 4. Grilla de productos (una tarjeta por figura) */}
                 {!loading && !error && visibleProducts.length > 0 && (
                     <div className="catalog-grid">
-                        {visibleProducts.map((product) => (
-                            <ProductCard key={product.id ?? product.id_product} product={product} onAdd={handleAddToCart} />
-                        ))}
+                        {visibleProducts.map((product) => {
+                            const productId = product.id ?? product.id_product;
+                            const foundInCart = cartItems.find((item) => item.productId === productId);
+                            const cartQuantity = foundInCart ? foundInCart.quantity : 0;
+
+                            return (
+                                <ProductCard
+                                    key={productId}
+                                    product={product}
+                                    onAdd={handleAddToCart}
+                                    cartQuantity={cartQuantity}
+                                />
+                            );
+                        })}
                     </div>
                 )}
 

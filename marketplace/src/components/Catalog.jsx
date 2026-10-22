@@ -120,14 +120,28 @@ const Catalog = ({ token }) => {
     
     // Ordenamos por precio solo los productos de la página actual
     // Sin orden elegido se muestran como los manda el backend
-    let visibleProducts = products;
-    if (sort === 'asc') {
-        visibleProducts = [...products].sort((a, b) => a.finalPrice - b.finalPrice);
-    }
-    if (sort === 'desc') {
-        visibleProducts = [...products].sort((a, b) => b.finalPrice - a.finalPrice);
+    //los productos sin stock iran atras de todo
+    let visibleProducts = [...products];
+
+    visibleProducts.sort((a,b) =>{
+    const aAgotada = a.stock === 0;
+    const bAgotada = b.stock === 0;
+    //Si 'a' está agotada y 'b' no, mandamos 'a' al final
+    if (aAgotada && !bAgotada) return 1;
+    //Si 'b' está agotada y 'a' no, mandamos 'a' al final
+    if (bAgotada && !aAgotada) return -1;
+    //si ambas estan en el mismo estado de stock, ordenamos segun sort
+    if (sort === 'asc'){
+        return a.finalPrice - b.finalPrice;
+    } else if (sort === 'desc'){
+        return b.finalPrice - a.finalPrice
     }
 
+    // Si el sort es 'default', no cambiamos el orden entre ellos
+    return 0;
+
+
+})
     // Es true si hay algún filtro aplicado
     const hasFilters = !sameFilters(filters, EMPTY_FILTERS);
     

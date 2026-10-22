@@ -82,7 +82,7 @@ const ProductDetail = () => {
              // Enviamos el carrito devuelto por el POST a la Navbar y abrimos el modal
              navigate(location.pathname, {
                  replace: true,
-                 state: { updatedCart, openCart: true, timestamp: Date.now() }
+                 state: { updatedCart, timestamp: Date.now() }
              });
          }
      })

@@ -18,6 +18,8 @@
     align-items: center;
     gap: 2em; /* Garantiza separación mínima entre el buscador y los links */
     width: 100%;
+    flex-wrap: wrap; /* si no entra todo, pasa a una segunda línea */
+    row-gap: 0.8em;
 
     /* esto para que la barra quede siempre visible */
     position: sticky;
@@ -25,21 +27,24 @@
     z-index: 50; /* Z-index 50 la mantiene por encima de los productos, pero por debajo de los modales (que tienen 100) */
 }
 
-/* Divisiones de la barra: le damos menos ancho vacío al logo y más a la botonera */
+/* Divisiones de la barra: el logo y la botonera ocupan lo que necesitan y el buscador usa el espacio que sobra.
+   Si no entra todo en una línea, las secciones pasan a una segunda línea en vez de desbordar la pantalla */
 .nav-section {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;           /* si los elementos de una sección no entran, bajan a la línea siguiente */
 }
 .justify-start { 
-    flex: 0.6; 
+    flex: 0 0 auto;            /* el logo no se achica ni se estira */
     justify-content: flex-start; 
 }
 .justify-center { 
-    flex: 1.1; 
+    flex: 1 1 6em;             /* el buscador crece, y salta de línea solo si queda menos de 6em */
     justify-content: center; 
 }
 .justify-end { 
-    flex: 1.3; 
+    flex: 0 1 auto;            /* la botonera ocupa lo que necesita */
+    margin-left: auto;         /* y se pega a la derecha aunque quede sola en su línea */
     justify-content: flex-end; 
 }
 
@@ -135,6 +140,8 @@
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.05em;    /* separa un poco las letras para que se lean mejor en mayúscula */
+    flex-wrap: wrap;           /* los links bajan de línea en lugar de salirse de la pantalla */
+    justify-content: flex-end;
 }
 
 .nav-link {

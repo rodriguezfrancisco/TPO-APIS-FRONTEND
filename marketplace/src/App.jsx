@@ -1,4 +1,3 @@
-
 import { Routes, Route } from 'react-router-dom';
 import Home from './views/Home';
 import Products from './views/Products';
@@ -8,8 +7,10 @@ import Product from './views/Product';
 import Register from './views/Register';
 import Profile from './views/Profile';
 import Sell from './views/Sell';
+import Admin from './views/Admin';
 import HowToBuy from './views/HowToBuy';
 import Contact from './views/Contact';
+
 import useLoginToken from './components/UseLoginToken';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/register" element={<Register onLogin={login} />} />
         <Route path="/profile" element={<Profile onLogin={login} />} />
         <Route path="/sell" element={<Sell />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/how-to-buy" element={<HowToBuy />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>

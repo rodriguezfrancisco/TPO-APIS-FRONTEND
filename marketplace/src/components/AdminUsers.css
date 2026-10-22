@@ -1,0 +1,200 @@
+/* =========================================================
+   ADMINISTRACIÓN DE USUARIOS — estilos
+   Misma estética que el catálogo: blanco y negro de alto
+   contraste, tipografía pesada y bordes cuadrados.
+   Todas las medidas en em/rem para que escalen con la fuente.
+   ========================================================= */
+
+
+/* ---------- Contenedor general ---------- */
+
+/* Fondo de toda la sección */
+.admin-wrapper {
+    padding: 2em;
+    background-color: black;
+    color: white;
+    min-height: 70vh;      /* ocupa al menos el 70% del alto de la pantalla */
+    font-size: 1rem;       /* base fija: los em de adentro se calculan sobre esto */
+}
+
+/* Limita el ancho del contenido y lo centra horizontalmente */
+.admin-container {
+    max-width: 70em;
+    margin: 0 auto;
+}
+
+
+/* ---------- Título ---------- */
+
+/* Título tipo "etiqueta": caja blanca con texto negro, inclinada */
+.admin-title {
+    display: inline-block;     /* el fondo blanco se ajusta al ancho del texto */
+    margin-bottom: 1em;
+    padding: 0.2em 0.6em;
+    background-color: white;
+    color: black;
+    font-size: 2.2em;
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    transform: skewX(-6deg);   /* inclina toda la caja para dar sensación de movimiento */
+}
+
+
+/* ---------- Mensajes ---------- */
+
+/* Cargando, error o sin permisos: caja con borde punteado */
+.admin-message {
+    margin-bottom: 1.5em;
+    padding: 1.5em 1em;
+    border: 0.2em dashed white;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* Aviso de éxito: caja blanca con texto negro, para que se note */
+.admin-feedback {
+    margin-bottom: 1.5em;
+    padding: 0.8em 1em;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+}
+
+/* Cantidad de usuarios, arriba de la lista */
+.admin-count {
+    margin-bottom: 0.8em;
+    font-size: 0.9em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+}
+
+
+/* ---------- Lista de usuarios ---------- */
+
+/* Una fila debajo de la otra */
+.admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+}
+
+/* Cada fila: datos, email, selector de rol y botón en una grilla de 4 columnas */
+.admin-row {
+    display: grid;
+    grid-template-columns: 2fr 2.5fr 1.5fr auto;
+    gap: 1em;
+    align-items: center;
+    padding: 1em;
+    border: 0.15em solid white;
+}
+
+/* Usuario y nombre completo, uno arriba del otro */
+.admin-user {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+    min-width: 0;              /* permite que el texto se achique sin desbordar */
+}
+
+/* Nombre de usuario en negrita */
+.admin-user-name {
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+/* Marca "(vos)" junto a tu propia cuenta */
+.admin-self {
+    font-size: 0.8em;
+    font-weight: 700;
+    opacity: 0.7;
+}
+
+/* Nombre y apellido, más tenues */
+.admin-user-sub {
+    font-size: 0.9em;
+    opacity: 0.7;
+}
+
+/* Email: si es muy largo, se corta en lugar de desbordar la fila */
+.admin-email {
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+
+/* ---------- Selector de rol y botón ---------- */
+
+/* Select con el mismo estilo que los campos del catálogo */
+.admin-field {
+    padding: 0.7em 1em;
+    border: 0.15em solid white;
+    background-color: black;
+    color: white;
+    font-weight: 700;
+    min-width: 0;
+}
+
+/* Foco visible solo al navegar con teclado (accesibilidad) */
+.admin-field:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+/* Select deshabilitado (tu propia cuenta): atenuado */
+.admin-field:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Botón Guardar rol: blanco con texto negro */
+.admin-btn {
+    padding: 0.7em 1.2em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;  /* suaviza el cambio al hover */
+}
+
+/* Al pasar el mouse se invierten los colores (solo si está habilitado) */
+.admin-btn:hover:not(:disabled) {
+    background-color: black;
+    color: white;
+}
+
+/* Foco con teclado, igual que en el selector */
+.admin-btn:focus-visible {
+    outline: 0.2em solid white;
+    outline-offset: 0.2em;
+}
+
+/* Botón deshabilitado (sin cambios o tu propia cuenta): atenuado y sin click */
+.admin-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+
+/* ---------- Responsive: pantallas chicas (≤ 48em ≈ 770px) ---------- */
+
+@media (max-width: 48em) {
+    /* Menos relleno para aprovechar el ancho del celular */
+    .admin-wrapper {
+        padding: 1em;
+    }
+
+    /* Cada fila pasa a una sola columna: todo uno debajo del otro */
+    .admin-row {
+        grid-template-columns: 1fr;
+        gap: 0.6em;
+    }
+
+    /* Título más chico para que no ocupe toda la pantalla */
+    .admin-title {
+        font-size: 1.6em;
+    }
+}

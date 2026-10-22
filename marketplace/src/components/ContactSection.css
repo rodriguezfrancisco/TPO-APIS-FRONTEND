@@ -112,6 +112,7 @@
 }
 
 .detail-value {
+    overflow-wrap: anywhere;  
     font-size: 1.1em;
     font-weight: 900;
     margin-top: 0.2em;
@@ -248,7 +249,7 @@
 
 @media (max-width: 55em) {
     .contact-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);  
     }
     .contact-main-title {
         font-size: 2.4em;

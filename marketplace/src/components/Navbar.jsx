@@ -5,6 +5,15 @@ import './Navbar.css';
 
 const URL = 'http://localhost:8080';
 
+// Función para extraer el usuario (subject) del payload del JWT
+const getUsernameFromToken = (token) => {
+    try {
+        return JSON.parse(atob(token.split('.')[1])).sub;
+    } catch {
+        return null;
+    }
+};
+
 const Navbar = ({ token, onLogout }) => {
     const location = useLocation();
     const navigate = useNavigate(); 
@@ -15,6 +24,9 @@ const Navbar = ({ token, onLogout }) => {
     const [cart, setCart] = useState({ items: [], total: 0 });
     
     const [isCartOpen, setIsCartOpen] = useState(false);
+
+    // Es true si el usuario logueado es administrador (así se muestra el link de Administración)
+    const [isAdmin, setIsAdmin] = useState(false);
 
     // 1. Etapa de montaje / cambio de usuario: traemos el carrito con GET una sola vez
     useEffect(() => {
@@ -31,6 +43,25 @@ const Navbar = ({ token, onLogout }) => {
             if (data) setCart(data);
         })
         .catch((error) => console.error("Error al cargar el carrito: ", error));
+    }, [token]);
+
+    // Buscamos al usuario logueado en GET /users para saber si es administrador
+    useEffect(() => {
+        if (!token) {
+            return;
+        }
+
+        fetch(`${URL}/users`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+            const sub = getUsernameFromToken(token);
+            const list = data && data.content ? data.content : [];
+            const me = list.find((u) => u.username === sub || u.email === sub);
+            setIsAdmin(me !== undefined && me.role === 'ADMIN');
+        })
+        .catch((error) => console.error("Error al cargar el rol: ", error));
     }, [token]);
 
     // 2. Recibimos actualizaciones de carrito o productos eliminados sin hacer otro GET
@@ -101,6 +132,7 @@ const Navbar = ({ token, onLogout }) => {
                         <Link to="/products" className="nav-link">Productos</Link>
                         {token && <Link to="/sell" className="nav-link">Vender</Link>}
                         {token && <Link to="/profile" className="nav-link">Mi Perfil</Link>}
+                        {token && isAdmin && <Link to="/admin" className="nav-link">Admin</Link>}
                         <Link to="/how-to-buy" className="nav-link">Cómo comprar</Link>
                         <Link to="/contact" className="nav-link">Contacto</Link>
                     </div>

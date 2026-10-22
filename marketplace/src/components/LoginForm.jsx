@@ -34,7 +34,6 @@ const LoginForm = ({ onLogin }) => {
             if (!data.accessToken) {
                 throw new Error("La respuesta del servidor no es válida");
             }
-            // Consultarle a la profe donde guardar el token
             onLogin(data.accessToken);
             navigate('/products');
         })

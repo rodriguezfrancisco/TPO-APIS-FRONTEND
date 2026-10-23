@@ -84,6 +84,16 @@ const ProductDetail = () => {
             const items = location.state.updatedCart.items || [];
             const found = items.find((item) => item.productId === Number(id));
             setCartQuantity(found ? found.quantity : 0);
+
+            // Volvemos a pedir el producto para que el stock que se muestra esté al día (por ejemplo, después de comprar)
+            fetch(`${URL}/products/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.id) {
+                    setProduct(data);
+                }
+            })
+            .catch((err) => console.error("Error al actualizar el producto: ", err));
         }
     }, [location.state, id]);
 

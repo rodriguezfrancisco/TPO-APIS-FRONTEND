@@ -50,12 +50,7 @@ const RegisterForm = ({ onLogin }) => {
         .then((data)=>{
             if (!data.accessToken) {
                 // El backend responde 400 cuando el usuario o el email ya existen
-                if (data.status === 400) {
-                    setError('Ese usuario o email ya está registrado.');
-                    return;
-                }
-                // Cualquier otra respuesta sin token salta al catch
-                throw new Error("La respuesta del servidor no es válida");
+                throw new Error(data.message || 'No pudimos crear la cuenta. Revisá los datos e intentá de nuevo.');
             }
             // El registro ya devuelve el token: le pasamos a App para iniciar sesión y volvemos al catálogo
             onLogin(data.accessToken);
@@ -63,7 +58,8 @@ const RegisterForm = ({ onLogin }) => {
         })
         .catch((error)=>{
             console.error("Error al crear la cuenta: ", error);
-            setError('No pudimos crear la cuenta. Revisá los datos y que el servidor esté activo.');
+            // Si el error lo lanzamos nosotros (trae el mensaje del backend) lo mostramos; si no (servidor caído), uno general
+            setError(error.name === 'Error' ? error.message : 'No pudimos crear la cuenta. Revisá los datos y que el servidor esté activo.');
         })
         // finally se ejecuta siempre, haya salido bien o mal
         .finally(()=> setLoading(false));

@@ -23,11 +23,12 @@ const LoginForm = ({ onLogin }) => {
         setLoading(true);
         setError(null);
         // El backend acepta tanto el email como el nombre de usuario en el campo email
-        fetch(`${URL}/api/v1/auth/login`, {
+        const options = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email.trim(), password: password })
-        })
+        };
+        fetch(`${URL}/api/v1/auth/login`, options)
         .then((response)=> response.json())
         .then((data)=>{
             // Si no vuelve el token (datos incorrectos o error del servidor) saltamos al catch

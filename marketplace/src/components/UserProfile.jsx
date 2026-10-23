@@ -112,15 +112,15 @@ const UserProfile = ({ onLogin }) => {
         if (password.trim() !== '') {
             bodyToSend.password = password;
         }
-
-        fetch(`${URL}/users/${user.id}`, {
+        const options = {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify(bodyToSend)
-        })
+        };
+        fetch(`${URL}/users/${user.id}`, options)
         .then((response) => {
              if (!response.ok) {
                 return response.json()

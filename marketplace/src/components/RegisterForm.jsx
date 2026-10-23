@@ -34,7 +34,7 @@ const RegisterForm = ({ onLogin }) => {
         }
         setLoading(true);
         setError(null);
-        fetch(`${URL}/api/v1/auth/register`, {
+        const options = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -45,7 +45,8 @@ const RegisterForm = ({ onLogin }) => {
                 password: password,
                 role: role
             })
-        })
+        };
+        fetch(`${URL}/api/v1/auth/register`, options)
         .then((response)=> response.json())
         .then((data)=>{
             if (!data.accessToken) {

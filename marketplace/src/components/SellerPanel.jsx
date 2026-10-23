@@ -75,15 +75,15 @@ const SellerPanel = () => {
     const handleCreateCategory = (e) => {
         e.preventDefault();
         if (!newCategoryName.trim()) return;
-
-        fetch(`${URL}/categories`, {
+        const options = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({ description: newCategoryName.trim() })
-        })
+        };
+        fetch(`${URL}/categories`, options)
         .then((res) => {
             if (!res.ok) {
                 // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
@@ -116,15 +116,15 @@ const SellerPanel = () => {
             discount_percentage: Number(discountPercentage) || 0,
             id_category: Number(categoryId)
         };
-
-        fetch(`${URL}/products`, {
+        const options = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify(productPayload)
-        })
+        };
+        fetch(`${URL}/products`, options)
         .then((response) => {
             if (!response.ok) {
                 // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
@@ -150,12 +150,12 @@ const SellerPanel = () => {
                 formData.append('productId', createdProduct.id);
                 formData.append('name', file.name);
                 formData.append('file', file);
-
-                return fetch(`${URL}/images`, {
+                const options = {
                     method: 'POST',
                     headers: { Authorization: `Bearer ${token}` },
                     body: formData
-                })
+                };
+                return fetch(`${URL}/images`, options)
                 .then((res) => {
                     // Si falla la subida, guardamos el mensaje que mandó el backend (si salió bien, null)
                     if (!res.ok) {
@@ -185,15 +185,15 @@ const SellerPanel = () => {
     const handleUpdateProduct = (productId, updatedFields) => {
         setError(null);
         setFeedback(null);
-
-        fetch(`${URL}/products/${productId}`, {
+        const options = {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify(updatedFields)
-        })
+        };
+        fetch(`${URL}/products/${productId}`, options)
         .then((res) => {
             if (!res.ok) {
                 // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
@@ -219,11 +219,11 @@ const SellerPanel = () => {
     const handleDisableProduct = (productId) => {
         setError(null);
         setFeedback(null);
-
-        fetch(`${URL}/products/${productId}`, {
+        const options = {
             method: 'PUT',
             headers: { Authorization: `Bearer ${token}` }
-        })
+        };
+        fetch(`${URL}/products/${productId}`, options)
         .then((res) => {
             if (!res.ok) {
                 // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)

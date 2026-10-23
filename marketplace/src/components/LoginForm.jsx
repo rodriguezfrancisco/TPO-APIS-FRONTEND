@@ -32,14 +32,16 @@ const LoginForm = ({ onLogin }) => {
         .then((data)=>{
             // Si no vuelve el token (datos incorrectos o error del servidor) saltamos al catch
             if (!data.accessToken) {
-                throw new Error("La respuesta del servidor no es válida");
+                // Con datos incorrectos el backend solo responde 403 (Forbidden): ahí avisamos nosotros
+                throw new Error(data.status === 403 || !data.message ? 'Usuario o contraseña incorrectos.' : data.message);
             }
             onLogin(data.accessToken);
             navigate('/products');
         })
         .catch((error)=>{
             console.error("Error al iniciar sesion: ", error);
-            setError(true);
+            // Si el error lo lanzamos nosotros (trae el mensaje del backend) lo mostramos; si no (servidor caído), uno general
+            setError(error.name === 'Error' ? error.message : 'No pudimos iniciar sesión. Revisá tus datos y que el servidor esté activo.');
         })
         // finally se ejecuta siempre, haya salido bien o mal
         .finally(()=> setLoading(false));
@@ -76,11 +78,7 @@ const LoginForm = ({ onLogin }) => {
                     />
 
                     {/* 3. Mensaje de error */}
-                    {error && (
-                        <p className="login-error" role="alert">
-                            No pudimos iniciar sesión. Revisá tu email o usuario y tu contraseña, y que el servidor esté activo.
-                        </p>
-                    )}
+                    {error && <p className="login-error" role="alert">{error}</p>}
 
                     {/* 4. Botón de envío */}
                     <button type="submit" className="login-btn" disabled={loading}>

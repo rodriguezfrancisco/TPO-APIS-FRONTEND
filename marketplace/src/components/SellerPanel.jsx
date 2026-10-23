@@ -85,7 +85,12 @@ const SellerPanel = () => {
             body: JSON.stringify({ description: newCategoryName.trim() })
         })
         .then((res) => {
-            if (!res.ok) throw new Error('La categoría ya existe o no tenés permisos.');
+            if (!res.ok) {
+                // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
+                return res.json()
+                .catch(() => ({}))
+                .then((data) => { throw new Error(data.message || 'La categoría ya existe o no tenés permisos.'); });
+            }
             return res.json();
         })
         .then((createdCat) => {
@@ -94,7 +99,7 @@ const SellerPanel = () => {
             setNewCategoryName('');
             setFeedback(`Categoría "${createdCat.description}" creada.`);
         })
-        .catch((err) => setError(err.message));
+        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'));
     };
 
     const handleCreateProduct = (e) => {
@@ -122,11 +127,24 @@ const SellerPanel = () => {
         })
         .then((response) => {
             if (!response.ok) {
-                throw new Error('Ya existe una figura con ese nombre (revisá tus publicaciones pausadas).');
+                // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
+                return response.json()
+                .catch(() => ({}))
+                .then((data) => { throw new Error(data.message || 'Ya existe una figura con ese nombre (revisá tus publicaciones pausadas).'); });
             }
             return response.json();
         })
         .then((createdProduct) => {
+            // Agregamos el producto a la lista con spread (sin otro GET) y limpiamos el formulario
+            setMyProducts([...myProducts, createdProduct]);
+            setName('');
+            setDescription('');
+            setPrice('');
+            setStock('');
+            setDiscountPercentage(0);
+            setFiles([]);
+
+            // Si adjuntó fotos, las subimos todas juntas a POST /images (cada una devuelve null si salió bien o su mensaje de error)
             const uploadPromises = Array.from(files).map((file) => {
                 const formData = new FormData();
                 formData.append('productId', createdProduct.id);
@@ -137,22 +155,30 @@ const SellerPanel = () => {
                     method: 'POST',
                     headers: { Authorization: `Bearer ${token}` },
                     body: formData
-                });
+                })
+                .then((res) => {
+                    // Si falla la subida, guardamos el mensaje que mandó el backend (si salió bien, null)
+                    if (!res.ok) {
+                        return res.json()
+                        .catch(() => ({}))
+                        .then((data) => data.message || `No se pudo subir la imagen ${file.name}.`);
+                    }
+                    return null;
+                })
+                .catch(() => `No se pudo subir la imagen ${file.name}.`);
             });
 
-            return Promise.all(uploadPromises).then(() => createdProduct);
+            // Esperamos a que terminen todas y avisamos el resultado
+            return Promise.all(uploadPromises).then((results) => {
+                const imageErrors = results.filter((message) => message !== null);
+                // Si alguna foto falló, lanzamos el aviso para que lo muestre el catch (la figura ya quedó publicada)
+                if (imageErrors.length > 0) {
+                    throw new Error(`La figura se publicó, pero hubo errores con las imágenes: ${imageErrors.join(' ')}`);
+                }
+                setFeedback('¡Figura publicada con éxito!');
+            });
         })
-        .then((createdProduct) => {
-            setMyProducts([...myProducts, createdProduct]);
-            setName('');
-            setDescription('');
-            setPrice('');
-            setStock('');
-            setDiscountPercentage(0);
-            setFiles([]);
-            setFeedback('¡Figura publicada con éxito!');
-        })
-        .catch((err) => setError(err.message))
+        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
         .finally(() => setSubmitting(false));
     };
 
@@ -169,7 +195,12 @@ const SellerPanel = () => {
             body: JSON.stringify(updatedFields)
         })
         .then((res) => {
-            if (!res.ok) throw new Error('No se pudo actualizar el producto.');
+            if (!res.ok) {
+                // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
+                return res.json()
+                .catch(() => ({}))
+                .then((data) => { throw new Error(data.message || 'No se pudo actualizar el producto.'); });
+            }
             return res.json();
         })
         .then((updatedProduct) => {
@@ -182,7 +213,7 @@ const SellerPanel = () => {
                     : `"${updatedProduct.name}" actualizado.`
             );
         })
-        .catch((err) => setError(err.message));
+        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'));
     };
 
     const handleDisableProduct = (productId) => {
@@ -194,7 +225,12 @@ const SellerPanel = () => {
             headers: { Authorization: `Bearer ${token}` }
         })
         .then((res) => {
-            if (!res.ok) throw new Error('No se pudo pausar la publicación.');
+            if (!res.ok) {
+                // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
+                return res.json()
+                .catch(() => ({}))
+                .then((data) => { throw new Error(data.message || 'No se pudo pausar la publicación.'); });
+            }
             // Marcamos state: false localmente con .map() sin hacer otro GET
             setMyProducts(
                 myProducts.map((p) => (p.id === productId ? { ...p, state: false } : p))
@@ -207,7 +243,7 @@ const SellerPanel = () => {
                 state: { removedProductId: productId, timestamp: Date.now() }
             });
         })
-        .catch((err) => setError(err.message));
+        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'));
     };
 
     const activeProducts = myProducts.filter((p) => p.state !== false);

@@ -43,14 +43,15 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
     const handleIncrease = (item) => {
         setLoading(true);
         setError(null);
-        fetch(`${URL}/cartItems`, {
+        const options = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({ productId: item.productId, quantity: 1 })
-        })
+        };
+        fetch(`${URL}/cartItems`, options)
         .then((res) => {
             if (!res.ok) {
                 return res.json()
@@ -68,10 +69,11 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
     const handleDecrease = (item) => {
         setLoading(true);
         setError(null);
-        fetch(`${URL}/cartItems/product/one/${item.productId}`, {
+        const options = {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` }
-        })
+        };
+        fetch(`${URL}/cartItems/product/one/${item.productId}`, options)
         .then((res) => {
             if (!res.ok) {
                 return res.json()
@@ -98,10 +100,11 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
     const handleRemove = (productId) => {
         setLoading(true);
         setError(null);
-        fetch(`${URL}/cartItems/product/${productId}`, {
+        const options = {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` }
-        })
+        };
+        fetch(`${URL}/cartItems/product/${productId}`, options)
         .then((res) => {
             if (!res.ok) {
                 return res.json()
@@ -122,15 +125,15 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
-
-        fetch(`${URL}/orders/checkout`, {
+        const options = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({ paymentMethod, deliveryMethod })
-        })
+        };
+        fetch(`${URL}/orders/checkout`, options)
         .then((res) => {
             if (!res.ok) {
                 return res.json()

@@ -79,14 +79,15 @@ const AdminUsers = () => {
     const handleChangeRole = (userId, newRole) => {
         setError(null);
         setFeedback(null);
-        fetch(`${URL}/users/${userId}`, {
+        const options = {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({ role: newRole })
-        })
+        };
+        fetch(`${URL}/users/${userId}`, options)
         .then((response) => response.json())
         .then((data) => {
             // Si no vuelve el usuario actualizado, lanzamos el mensaje que mandó el backend

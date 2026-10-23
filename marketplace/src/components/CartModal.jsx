@@ -52,11 +52,15 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
             body: JSON.stringify({ productId: item.productId, quantity: 1 })
         })
         .then((res) => {
-            if (!res.ok) throw new Error('No hay más stock disponible de esta figura.');
+            if (!res.ok) {
+                return res.json()
+                .catch(() => ({}))
+                .then((data) => { throw new Error(data.message || 'No hay más stock disponible de esta figura.'); });
+            }
             return res.json();
         })
         .then((updatedCart) => setCart(updatedCart))
-        .catch((err) => setError(err.message))
+        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
         .finally(() => setLoading(false));
     };
 
@@ -69,7 +73,11 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
             headers: { Authorization: `Bearer ${token}` }
         })
         .then((res) => {
-            if (!res.ok) throw new Error('Error al descontar unidad.');
+            if (!res.ok) {
+                return res.json()
+                .catch(() => ({}))
+                .then((data) => { throw new Error(data.message || 'Error al descontar unidad.'); });
+            }
             return res.json();
         })
         .then(() => {
@@ -82,7 +90,7 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
                 .filter((i) => i.quantity > 0);
             updateLocalCart(updatedItems);
         })
-        .catch((err) => setError(err.message))
+        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
         .finally(() => setLoading(false));
     };
 
@@ -95,14 +103,18 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
             headers: { Authorization: `Bearer ${token}` }
         })
         .then((res) => {
-            if (!res.ok) throw new Error('Error al quitar la figura.');
+            if (!res.ok) {
+                return res.json()
+                .catch(() => ({}))
+                .then((data) => { throw new Error(data.message || 'Error al quitar la figura.'); });
+            }
             return res.json();
         })
         .then(() => {
             const updatedItems = items.filter((i) => i.productId !== productId);
             updateLocalCart(updatedItems);
         })
-        .catch((err) => setError(err.message))
+        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
         .finally(() => setLoading(false));
     };
 
@@ -119,12 +131,11 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
             },
             body: JSON.stringify({ paymentMethod, deliveryMethod })
         })
-        .then(async (res) => {
+        .then((res) => {
             if (!res.ok) {
-                // Capturamos el error real del backend en lugar de hardcodear el del stock
-                const errData = await res.json().catch(() => null);
-                const errorMessage = errData?.message || `Error del servidor (${res.status}). No se pudo procesar la compra. Revisá el stock disponible.`;
-                throw new Error(errorMessage);
+                return res.json()
+                .catch(() => ({}))
+                .then((data) => { throw new Error(data.message || 'No se pudo procesar la compra. Revisá el stock disponible.'); });
             }
             return res.json();
         })
@@ -133,7 +144,7 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
             setCart({ ...cart, items: [], total: 0 });
             setStep(3);
         })
-        .catch((err) => setError(err.message))
+        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
         .finally(() => setLoading(false));
     };
 

@@ -210,15 +210,15 @@ const Catalog = ({ token }) => {
             savedImages[product.id] = product.imageIds[0];
             localStorage.setItem('cartImages', JSON.stringify(savedImages));
         }
-
-        fetch(`${URL}/cartItems`, {
+        const options = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify({ productId: product.id, quantity: 1 })
-        })
+        };
+        fetch(`${URL}/cartItems`, options)
         .then((response) => response.json())
         .then((updatedCart) => {
             if (updatedCart && updatedCart.items) {

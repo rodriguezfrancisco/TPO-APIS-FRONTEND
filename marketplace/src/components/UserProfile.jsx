@@ -122,7 +122,11 @@ const UserProfile = ({ onLogin }) => {
             body: JSON.stringify(bodyToSend)
         })
         .then((response) => {
-            if (!response.ok) throw new Error('El usuario o email ya está en uso.');
+             if (!response.ok) {
+                return response.json()
+                .catch(() => ({}))
+                .then((data) => { throw new Error(data.message || 'El usuario o email ya está en uso.'); });
+            }
             return response.json();
         })
         .then((data) => {
@@ -136,7 +140,7 @@ const UserProfile = ({ onLogin }) => {
                 onLogin(data.accessToken);
             }
         })
-        .catch((err) => setError(err.message))
+        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
         .finally(() => setSaving(false));
     };
 

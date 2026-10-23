@@ -45,14 +45,14 @@ const ProductDetail = () => {
         .then((response) => response.json())
         .then((data) => {
             if (!data.id) {
-                throw new Error("La respuesta del servidor no es válida");
+                throw new Error(data.message || 'No pudimos cargar la figura.');
             }
             setProduct(data);
             setError(null);
         })
         .catch((error) => {
             console.error("Error al cargar el producto: ", error);
-            setError(true);
+            setError(error.name === 'Error' ? error.message : 'No pudimos cargar la figura. Revisá que el servidor esté activo e intentá de nuevo.');
         })
         .finally(() => setLoading(false));
     }, [id]);
@@ -169,11 +169,7 @@ const ProductDetail = () => {
                 {/* 2. Mensajes de estado (cargando y error) */}
                 {loading && <p className="detail-message">Cargando figura...</p>}
 
-                {!loading && error && (
-                    <p className="detail-message">
-                        No pudimos cargar la figura. Puede que no exista o que el servidor no esté activo.
-                    </p>
-                )}
+                {!loading && error && <p className="detail-message">{error}</p>}
 
                 {/* 3. Detalle del producto */}
                 {!loading && product && (

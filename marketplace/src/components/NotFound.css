@@ -1,0 +1,57 @@
+/* =========================================================
+   PÁGINA NO ENCONTRADA (404) — estilos
+   Misma estética que el resto: blanco y negro de alto contraste.
+   ========================================================= */
+
+/* Fondo de toda la sección */
+.notfound-wrapper {
+    padding: 3em 2em;
+    background-color: black;
+    color: white;
+    min-height: 70vh;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Contenido centrado, uno debajo del otro */
+.notfound-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2em;
+    text-align: center;
+}
+
+/* Número grande tipo "etiqueta": caja blanca con texto negro, inclinada */
+.notfound-code {
+    padding: 0.1em 0.5em;
+    background-color: white;
+    color: black;
+    font-size: 4em;
+    font-weight: 900;
+    font-style: italic;
+    transform: skewX(-6deg);
+}
+
+.notfound-text {
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+/* Botón blanco con texto negro; al pasar el mouse se invierten los colores */
+.notfound-btn {
+    padding: 0.8em 1.5em;
+    border: 0.15em solid white;
+    background-color: white;
+    color: black;
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.notfound-btn:hover {
+    background-color: black;
+    color: white;
+}

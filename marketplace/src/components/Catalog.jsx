@@ -62,11 +62,7 @@ const Catalog = ({ token }) => {
 
     // Pedimos las categorías para el selector cada vez que cambia la sesión
     useEffect(()=>{
-        // Sin sesión no se pide nada: el backend solo lista las categorías con el token
-        if (!token) {
-            return;
-        }
-        fetch(`${URL}/categories`, { headers: { Authorization: `Bearer ${token}` } })
+        fetch(`${URL}/categories`, { headers: { Authorization: `Bearer ${token}` } } : undefined)
         .then((response)=> response.json())
         .then((data)=>{
             // Si no vienen las categorías (por ejemplo, token vencido) saltamos al catch
@@ -90,7 +86,7 @@ const Catalog = ({ token }) => {
             url += `&keyword=${encodeURIComponent(filters.keyword)}`;
         }
         // La categoría solo cuenta con la sesión iniciada, que es cuando se puede elegir
-        if (filters.categoryId && token) {
+        if (filters.categoryId) {
             url += `&categoryId=${filters.categoryId}`;
         }
         if (filters.minPrice !== '') {
@@ -271,7 +267,7 @@ const Catalog = ({ token }) => {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                         {/* Categoría: solo aparece con sesión iniciada (el backend pide el token para listarlas) */}
-                        {token && categories.length > 0 && (
+                        {categories.length > 0 && (
                             <select
                                 className="catalog-field"
                                 aria-label="Filtrar por categoría"

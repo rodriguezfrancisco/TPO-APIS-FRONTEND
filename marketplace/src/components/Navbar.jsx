@@ -136,7 +136,7 @@ const Navbar = ({ token, onLogout }) => {
                 {/* 3. Sección Derecha (Navegación y Carrito) */}
                 <div className="nav-section justify-end gap-links">
                     
-                    <div className="nav-links hide-on-mobile">
+                    <div className="nav-links">
                         <Link to="/products" className="nav-link">Productos</Link>
                         {token && <Link to="/sell" className="nav-link">Vender</Link>}
                         {token && <Link to="/profile" className="nav-link">Mi Perfil</Link>}

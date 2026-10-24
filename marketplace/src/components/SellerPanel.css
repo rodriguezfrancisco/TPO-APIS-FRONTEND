@@ -58,6 +58,7 @@
 
 .seller-cat-form .seller-field {
     flex: 1;
+    min-width: 0;              
     margin-bottom: 0;
 }
 
@@ -232,7 +233,7 @@
 @media (max-width: 55em) {
     .seller-grid,
     .seller-row-3 {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 

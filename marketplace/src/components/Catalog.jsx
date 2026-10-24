@@ -29,7 +29,7 @@ const Catalog = ({ token }) => {
     const [error, setError] = useState(null);
     // Mensaje de error al agregar al carrito, por ejemplo sin stock (null si no hay ninguno)
     const [cartError, setCartError] = useState(null);
-    // Categorías para el selector (solo se piden con la sesión iniciada)
+    // Categorías para el selector 
     const [categories, setCategories] = useState([]);
     // Lo que se va escribiendo o eligiendo en el formulario de filtros
     const [search, setSearch] = useState('');
@@ -60,12 +60,12 @@ const Catalog = ({ token }) => {
     }
 }, [location.state, navigate, location.pathname]);
 
-    // Pedimos las categorías para el selector cada vez que cambia la sesión
+    // Pedimos las categorías  para el selector al abrir el catálogo
     useEffect(()=>{
-        fetch(`${URL}/categories`, { headers: { Authorization: `Bearer ${token}` } } : undefined)
+        fetch(`${URL}/categories`)
         .then((response)=> response.json())
         .then((data)=>{
-            // Si no vienen las categorías (por ejemplo, token vencido) saltamos al catch
+            // Si no vienen las categorías (por ejemplo, un error del servidor) saltamos al catch
             if (!data.content) {
                 throw new Error("La respuesta del servidor no es válida");
             }
@@ -75,7 +75,7 @@ const Catalog = ({ token }) => {
             // Si falla, el catálogo sigue funcionando: solo no aparece el selector
             console.error("Error al cargar las categorias: ", error);
         });
-    }, [token]);
+    }, []);
 
     // Hacemos el GET al backend cada vez que cambia la página, los filtros o la sesión
     useEffect(()=>{
@@ -85,7 +85,6 @@ const Catalog = ({ token }) => {
             // encodeURIComponent evita que espacios o símbolos rompan la URL
             url += `&keyword=${encodeURIComponent(filters.keyword)}`;
         }
-        // La categoría solo cuenta con la sesión iniciada, que es cuando se puede elegir
         if (filters.categoryId) {
             url += `&categoryId=${filters.categoryId}`;
         }
@@ -137,7 +136,6 @@ const Catalog = ({ token }) => {
 
     // Si el sort es 'default', no cambiamos el orden entre ellos
     return 0;
-
 
 })
     // Es true si hay algún filtro aplicado
@@ -218,7 +216,7 @@ const Catalog = ({ token }) => {
         .then((response) => response.json())
         .then((updatedCart) => {
             if (updatedCart && updatedCart.items) {
-                // Enviamos el carrito devuelto por el POST a la Navbar y abrimos el modal
+                // Enviamos el carrito devuelto por el POST a la Navbar para que actualice el contador
                 navigate(location.pathname, {
                     replace: true,
                     state: { updatedCart, timestamp: Date.now() }
@@ -266,7 +264,7 @@ const Catalog = ({ token }) => {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                        {/* Categoría: solo aparece con sesión iniciada (el backend pide el token para listarlas) */}
+                        {/* Categoría: aparece cuando el backend devuelve las categorías */}
                         {categories.length > 0 && (
                             <select
                                 className="catalog-field"

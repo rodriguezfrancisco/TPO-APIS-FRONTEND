@@ -8,6 +8,7 @@ import Register from './views/Register';
 import Profile from './views/Profile';
 import Sell from './views/Sell';
 import Admin from './views/Admin';
+import NotFound from './views/NotFound';
 import HowToBuy from './views/HowToBuy';
 import Contact from './views/Contact';
 
@@ -31,6 +32,7 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/how-to-buy" element={<HowToBuy />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

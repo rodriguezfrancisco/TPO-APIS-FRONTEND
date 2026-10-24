@@ -4,7 +4,7 @@ import './HowToBuyContent.css';
 
 const FAQS = [
     {
-        question: '¿Las figuras son originales y nuevas?',
+        question: 'Las figuras son originales y nuevas?',
         answer: 'Todas las publicaciones indican el estado y los parámetros de cada figura en su vista de detalle. Podés ver fotos reales cargadas por cada vendedor antes de agregar al carrito.'
     },
     {

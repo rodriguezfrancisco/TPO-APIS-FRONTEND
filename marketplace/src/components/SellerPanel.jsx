@@ -438,6 +438,8 @@ const SellerPanel = () => {
 };
 
 const SellerProductRow = ({ product, onUpdate, onDelete }) => {
+    const [name, setName] = useState(product.name);
+    const [description, setDescription] = useState(product.description || '');
     const [price, setPrice] = useState(product.price);
     const [stock, setStock] = useState(product.stock);
     const [discount, setDiscount] = useState(product.discountPercentage || 0);
@@ -448,6 +450,8 @@ const SellerProductRow = ({ product, onUpdate, onDelete }) => {
     const handleSave = (e) => {
         e.preventDefault();
         onUpdate(product.id, {
+            name: name.trim() || product.name,
+            description: description.trim() || product.description,
             price: Number(price),
             stock: Number(stock),
             discount_percentage: Number(discount)
@@ -456,6 +460,8 @@ const SellerProductRow = ({ product, onUpdate, onDelete }) => {
 
     const handleRepublish = () => {
         onUpdate(product.id, {
+            name: name.trim() || product.name,
+            description: description.trim() || product.description,
             price: Number(price),
             stock: Number(stock),
             discount_percentage: Number(discount),
@@ -499,6 +505,27 @@ const SellerProductRow = ({ product, onUpdate, onDelete }) => {
                 )}
             </div>
 
+            <div className="seller-group">
+                <label className="seller-label-sm">Nombre</label>
+                <input
+                    type="text"
+                    className="seller-field-sm"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                />
+            </div>
+            <div className="seller-group">
+                <label className="seller-label-sm">Descripción</label>
+                <textarea
+                    rows="2"
+                    className="seller-field-sm"
+                    required
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                />
+            </div>
+
             <div className="seller-row-3">
                 <div className="seller-group">
                     <label className="seller-label-sm">Precio ($)</label>
@@ -534,7 +561,7 @@ const SellerProductRow = ({ product, onUpdate, onDelete }) => {
 
             {!isInactive && (
                 <button type="submit" className="seller-btn-secondary">
-                    Guardar cambios de stock / descuento
+                    Guardar cambios
                 </button>
             )}
         </form>

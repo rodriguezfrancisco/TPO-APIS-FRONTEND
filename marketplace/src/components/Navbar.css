@@ -243,9 +243,11 @@
     .custom-navbar { font-size: 0.75rem; }
 }
 
-/* Celulares (≤ 768px): se ocultan buscador y links para no saturar,
-   y la fuente vuelve al tamaño normal para que logo y carrito se vean bien */
 @media (max-width: 768px) {
     .hide-on-mobile { display: none; }
-    .custom-navbar { font-size: 1rem; }
+    .custom-navbar { font-size: 1rem; position: static; }   /* en celular la barra se mueve con la página (así no tapa media pantalla) */
+
+    /* Los links ya no se ocultan: la botonera ocupa toda la línea y los links bajan debajo del logo, centrados */
+    .justify-end { flex: 1 1 100%; justify-content: center; }
+    .nav-links { flex: 1 1 100%; justify-content: center; font-size: 0.8em; gap: 0.6em 1.1em; }
 }

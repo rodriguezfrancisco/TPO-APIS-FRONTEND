@@ -116,6 +116,11 @@ const UserProfile = ({ onLogin }) => {
                 setSaving(false);
                 return;
             }
+            if (password.length < 8) {
+                setError('La nueva contraseña debe tener al menos 8 caracteres.');
+                setSaving(false);
+                return;
+            }
             bodyToSend.currentPassword = currentPassword;
             bodyToSend.password = password;
         }

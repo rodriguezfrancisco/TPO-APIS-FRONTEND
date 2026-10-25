@@ -7,9 +7,9 @@ const URL = 'http://localhost:8080';
 // Función para extraer el usuario (subject) del payload del JWT
 const getUsernameFromToken = (token) => {
     try {
-        const payloadBase64 = token.split('.')[1];
-        const decodedJson = atob(payloadBase64);
-        const payload = JSON.parse(decodedJson);
+        const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        const bytes = Uint8Array.from(atob(payloadBase64), (c) => c.charCodeAt(0));
+        const payload = JSON.parse(new TextDecoder().decode(bytes));
         return payload.sub;
     } catch {
         return null;

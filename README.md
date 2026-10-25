@@ -133,6 +133,7 @@ El menú muestra **Vender** solo a vendedores y administradores, y **Admin** sol
 - **Registro** con usuario, nombre, apellido, email, contraseña (con confirmación validada en el front) y tipo de cuenta **Comprador** o **Vendedor**.
 - **Login** con email *o* nombre de usuario y contraseña. El token (JWT) se guarda en `localStorage` (`jwtToken`) mediante el hook `useLoginToken`.
 - **Perfil:** el usuario ve y edita sus datos, y consulta su historial de compras.
+- **Contraseñas:** mínimo de 8 caracteres, tanto al registrarse como al cambiarla desde el perfil. Para cambiarla hay que ingresar también la contraseña actual.
 - **Administración** (`/admin`): el administrador ve todos los usuarios y cambia su rol. Su propia cuenta aparece bloqueada para no quedarse sin acceso.
 
 ### Catálogo (`Catalog`)

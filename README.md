@@ -1,6 +1,6 @@
 # Gogogo Market — TPO APIs (Frontend)
 
-Frontend del **Marketplace** del TPO de Aplicaciones Interactivas (UADE). Es una tienda online de **figuras de anime** con estética de manga/cómic, hecha en **React + Vite**, que consume la API REST del backend en Spring Boot.
+Frontend del **Marketplace** del TPO de Aplicaciones Interactivas (UADE). Es una tienda online de **figuras de anime** con estética de manga, hecha en **React + Vite**, que consume la API REST del backend en Spring Boot.
 
 > ゴゴゴ — *"Llevate tu figura de anime"*
 

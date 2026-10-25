@@ -11,6 +11,7 @@ const getUsernameFromToken = (token) => {
          const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
          const bytes = Uint8Array.from(atob(payloadBase64), (c) => c.charCodeAt(0));
          const payload = JSON.parse(new TextDecoder().decode(bytes));
+         return payload.sub;
     } catch {
         return null;
     }

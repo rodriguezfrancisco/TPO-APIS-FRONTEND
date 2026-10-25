@@ -27,6 +27,13 @@ const RegisterForm = ({ onLogin }) => {
     const handleSubmit = (e) => {
         // Evita que el formulario recargue la página
         e.preventDefault();
+
+        // La contraseña tiene que tener al menos 8 caracteres (el backend también lo valida)
+        if (password.length < 8) {
+            setError('La contraseña debe tener al menos 8 caracteres.');
+            return;
+        }
+        
         // Las contraseñas se comparan acá, antes de enviar nada al backend
         if (password !== confirmPassword) {
             setError('Las contraseñas no coinciden.');

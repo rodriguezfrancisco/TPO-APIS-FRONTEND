@@ -11,7 +11,7 @@ Frontend del **Marketplace** del TPO de Aplicaciones Interactivas (UADE). Es una
 | Herramienta | Uso |
 |---|---|
 | [React 19](https://react.dev/) | Librería de UI |
-| [Vite 8](https://vite.dev/) | Servidor de desarrollo y build |
+| [Vite 8](https://vite.dev/) | Servidor de desarrollo |
 | [React Router 7](https://reactrouter.com/) | Navegación entre vistas (`react-router-dom`) |
 | [Tailwind CSS 3](https://tailwindcss.com/) + [daisyUI 5](https://daisyui.com/) | Utilidades de estilo y componentes base |
 | CSS por componente | Estilos propios de cada componente (`*.css`) |
@@ -23,7 +23,7 @@ Frontend del **Marketplace** del TPO de Aplicaciones Interactivas (UADE). Es una
 
 - **Node.js** 20.19+ o 22.12+ (lo pide Vite 8)
 - **npm**
-- El **backend del Marketplace** corriendo en `http://localhost:8080`
+- El **backend del Marketplace** corriendo en `http://localhost:8080` (ver [Qué necesita el backend](#qué-necesita-el-backend))
 
 ---
 
@@ -45,16 +45,16 @@ npm run dev
 
 La app queda disponible en **http://localhost:5173**.
 
-> ⚠️ Antes de abrir la app, levantá el backend. Si no está activo, el catálogo y el detalle muestran un mensaje de error.
+> ⚠️ Antes de abrir la app, levantá el backend. Si no está activo, el catálogo y el detalle muestran un mensaje de error en español.
 
 ### Scripts disponibles
 
 | Comando | Qué hace |
 |---|---|
 | `npm run dev` | Levanta el servidor de desarrollo con recarga en caliente |
-| `npm run build` | Genera la versión de producción en `dist/` |
-| `npm run preview` | Sirve localmente el build de producción |
 | `npm run lint` | Corre ESLint sobre el proyecto |
+
+> **Sobre el build de producción:** no forma parte de lo que se evalúa en este proyecto, y `npm run build` falla por una incompatibilidad entre las versiones de daisyUI (5) y Tailwind (3) que trae el proyecto. Si hiciera falta generarlo, se puede con `npx vite build --minify false`.
 
 ---
 
@@ -67,22 +67,22 @@ marketplace/
 │   └── Logo.jpg            # Logo / favicon
 ├── src/
 │   ├── main.jsx            # Punto de entrada: monta <App /> dentro de <BrowserRouter>
-│   ├── App.jsx             # Navbar + definición de rutas
+│   ├── App.jsx             # Navbar + definición de rutas (usa el hook useLoginToken)
 │   ├── index.css           # Directivas de Tailwind
-│   ├── views/              # Páginas (una por ruta)
-│   │   ├── Home.jsx
-│   │   ├── Products.jsx
-│   │   ├── Product.jsx
-│   │   ├── Login.jsx
-│   │   └── Register.jsx
-│   ├── components/         # Componentes reutilizables (cada uno con su .css)
-│   │   ├── Navbar.jsx
-│   │   ├── HomeBanner.jsx
-│   │   ├── Catalog.jsx
-│   │   ├── ProductCard.jsx
-│   │   ├── ProductDetail.jsx
-│   │   ├── LoginForm.jsx
-│   │   └── RegisterForm.jsx
+│   ├── views/              # Páginas (una por ruta); solo envuelven a un componente
+│   │   ├── Home.jsx · Products.jsx · Product.jsx
+│   │   ├── Login.jsx · Register.jsx · Profile.jsx
+│   │   ├── Sell.jsx · Admin.jsx
+│   │   └── HowToBuy.jsx · Contact.jsx · NotFound.jsx
+│   ├── components/         # Componentes (cada uno con su .css)
+│   │   ├── UseLoginToken.jsx   # Hook que guarda el token (estado + localStorage)
+│   │   ├── Navbar.jsx · HomeBanner.jsx
+│   │   ├── Catalog.jsx · ProductCard.jsx · ProductDetail.jsx
+│   │   ├── CartModal.jsx       # Carrito y checkout en 3 pasos
+│   │   ├── LoginForm.jsx · RegisterForm.jsx · UserProfile.jsx
+│   │   ├── SellerPanel.jsx     # Panel del vendedor
+│   │   ├── AdminUsers.jsx      # Gestión de usuarios y permisos
+│   │   └── HowToBuyContent.jsx · ContactSection.jsx · NotFound.jsx
 │   └── assets/
 ├── tailwind.config.js
 ├── postcss.config.js
@@ -96,40 +96,67 @@ marketplace/
 
 ## Rutas
 
-| Ruta | Vista | Descripción |
-|---|---|---|
-| `/` y `/home` | `Home` | Banner principal con un producto destacado |
-| `/products` | `Products` | Catálogo con búsqueda, orden y paginación |
-| `/products/:id` | `Product` | Detalle de una figura |
-| `/login` | `Login` | Inicio de sesión |
-| `/register` | `Register` | Registro de cuenta (comprador o vendedor) |
+| Ruta | Vista | Quién la ve | Descripción |
+|---|---|---|---|
+| `/` y `/home` | `Home` | Todos | Banner principal con un producto destacado |
+| `/products` | `Products` | Todos | Catálogo con búsqueda, filtros, orden y paginación |
+| `/products/:id` | `Product` | Todos | Detalle de una figura |
+| `/login` | `Login` | Todos | Inicio de sesión |
+| `/register` | `Register` | Todos | Registro de cuenta (comprador o vendedor) |
+| `/profile` | `Profile` | Con sesión | Datos de la cuenta e historial de compras |
+| `/sell` | `Sell` | Vendedores y administradores | Panel para publicar y gestionar figuras |
+| `/admin` | `Admin` | Administradores | Gestión de usuarios y permisos |
+| `/how-to-buy` | `HowToBuy` | Todos | Guía de compra |
+| `/contact` | `Contact` | Todos | Formulario de contacto (local, no llama al backend) |
+| cualquier otra | `NotFound` | Todos | Página 404 |
+
+Las rutas que exigen sesión (`/profile`, `/sell`, `/admin`) redirigen a `/login` si no hay token.
+
+---
+
+## Roles y permisos
+
+| Rol | Puede |
+|---|---|
+| **Visitante** | Ver el catálogo y los detalles, buscar y filtrar |
+| **Comprador** (`BUYER`) | Lo anterior + carrito, compras y perfil |
+| **Vendedor** (`SELLER`) | Lo de comprador + publicar y gestionar sus figuras |
+| **Administrador** (`ADMIN`) | Lo de vendedor + crear categorías y cambiar el rol de los usuarios |
+
+El menú muestra **Vender** solo a vendedores y administradores, y **Admin** solo a administradores. Los permisos los asigna el administrador desde `/admin`.
 
 ---
 
 ## Funcionalidades
 
-### Navbar
-Logo de Gogogo Market, buscador, links a *Productos*, *Cómo comprar* y *Contacto*, botón **Ingresar / Cerrar sesión** según haya token, y botón de carrito con contador.
-
-### Home
-Banner estilo cómic (fondo de tramado, espiral de cuaderno, globo de texto "¡La quiero!") con botones a *Ver figuras* y *Cómo comprar*. A la derecha muestra la imagen del primer producto de la base, o una silueta si no hay imagen.
+### Gestión de usuarios
+- **Registro** con usuario, nombre, apellido, email, contraseña (con confirmación validada en el front) y tipo de cuenta **Comprador** o **Vendedor**.
+- **Login** con email *o* nombre de usuario y contraseña. El token (JWT) se guarda en `localStorage` (`jwtToken`) mediante el hook `useLoginToken`.
+- **Perfil:** el usuario ve y edita sus datos, y consulta su historial de compras.
+- **Administración** (`/admin`): el administrador ve todos los usuarios y cambia su rol. Su propia cuenta aparece bloqueada para no quedarse sin acceso.
 
 ### Catálogo (`Catalog`)
-- Trae los productos **paginados** desde el backend (12 por página; la página arranca en 0, como en Spring).
-- **Buscador** por nombre/personaje: se envía con Enter o con el botón y vuelve a la primera página.
-- **Orden por precio** (menor a mayor / mayor a menor), aplicado sobre la página actual.
-- Mensajes de estado: cargando, error de servidor y sin resultados.
-
-### Tarjeta de producto (`ProductCard`)
-Imagen (o placeholder ゴ), categoría, nombre, precio en **pesos argentinos** (`$ 159.900`), precio original tachado si hay descuento, y etiquetas de **descuento** y **Agotada**. La imagen y el nombre llevan al detalle.
+- Productos **paginados** desde el backend (12 por página).
+- **Búsqueda** por nombre, **filtro por categoría** (disponible también sin iniciar sesión) y **rango de precio** (se compara con el precio sin descuento). Se aplican juntos con el botón *Buscar* o Enter, y *Limpiar* los borra.
+- **Orden por precio** sobre la página actual; las figuras agotadas quedan al final.
+- Cada tarjeta muestra imagen, categoría, nombre, precio en pesos argentinos, descuento (con el precio original tachado), etiqueta **Agotada** y cuántas unidades hay de esa figura en tu carrito.
 
 ### Detalle de producto (`ProductDetail`)
-Galería con imagen principal y miniaturas (si hay más de una imagen), categoría, precio con descuento, stock disponible, descripción y vendedor.
+Galería con miniaturas, categoría, precio con descuento, stock, descripción y vendedor. Selector de cantidad limitado por el stock. Si la figura está agotada, queda indicado y no se puede agregar.
 
-### Login y registro
-- **Login** con email *o* nombre de usuario y contraseña.
-- **Registro** con usuario, nombre, apellido, email, contraseña (con confirmación validada en el front) y tipo de cuenta **BUYER** o **SELLER**. Si el usuario o el email ya existen, se muestra un error específico.
-- Ambos reciben un `accessToken` (JWT) del backend y redirigen al catálogo.
+### Carrito y compra (`CartModal`)
+- Agregar desde el catálogo o el detalle (sin sesión lleva al login).
+- En el carrito: sumar, restar y quitar productos, con el **total calculado automáticamente**.
+- **Checkout en 3 pasos** (Carrito → Tus datos → Listo): se elige medio de pago y forma de entrega. El backend valida el stock, lo descuenta y devuelve la orden.
+
+### Panel del vendedor (`SellerPanel`)
+- **Publicar** una figura con nombre, categoría, precio, stock, descuento, descripción y **una o más fotos** (hay que elegirlas juntas en la misma ventana con Ctrl o Shift).
+- **Modificar** nombre, descripción, precio, stock y descuento de cada publicación.
+- **Eliminar** una publicación (baja lógica) y **volver a publicarla** desde la sección plegable *Publicaciones eliminadas*.
+- El administrador además puede **crear categorías**.
+
+### Otras pantallas
+Banner del Home con el primer producto, *Cómo comprar*, *Contacto* y una página **404**.
 
 ---
 
@@ -141,45 +168,50 @@ La URL base está definida como constante en cada componente:
 const URL = 'http://localhost:8080';
 ```
 
+Si cambia, se reemplaza `http://localhost:8080` en todo el proyecto con buscar y reemplazar.
+
 Endpoints que consume el frontend:
 
-| Método | Endpoint | Usado en | Respuesta esperada |
-|---|---|---|---|
-| `GET` | `/products?page={n}&size={n}&keyword={texto}` | `Catalog`, `HomeBanner` | Página de Spring (`content`, `totalPages`) |
-| `GET` | `/products/{id}` | `ProductDetail` | Producto |
-| `GET` | `/images/view/{imageId}` | `ProductCard`, `ProductDetail`, `HomeBanner` | Imagen |
-| `POST` | `/api/v1/auth/login` | `LoginForm` | `{ accessToken }` |
-| `POST` | `/api/v1/auth/register` | `RegisterForm` | `{ accessToken }` |
+| Método | Endpoint | Para qué |
+|---|---|---|
+| `POST` | `/api/v1/auth/login` · `/api/v1/auth/register` | Iniciar sesión y registrarse (devuelven `accessToken`) |
+| `GET` | `/products` (con `page`, `size`, `keyword`, `categoryId`, `minPrice`, `maxPrice`) | Catálogo paginado y filtrado |
+| `GET` | `/products/{id}` | Detalle de una figura |
+| `GET` | `/products/seller` | Publicaciones del vendedor (incluye las eliminadas) |
+| `POST` · `PATCH` · `PUT` | `/products` · `/products/{id}` | Publicar, modificar, eliminar y volver a publicar |
+| `POST` | `/images` | Subir una foto de un producto |
+| `GET` | `/images/view/{id}` | Ver una imagen |
+| `GET` · `POST` | `/categories` | Listar categorías (público) y crearlas (administrador) |
+| `GET` | `/carts` | Carrito del usuario |
+| `POST` · `DELETE` | `/cartItems` · `/cartItems/product/{id}` · `/cartItems/product/one/{id}` | Agregar, quitar y restar unidades |
+| `POST` · `GET` | `/orders/checkout` · `/orders` | Comprar y ver el historial |
+| `GET` · `PATCH` | `/users` · `/users/{id}` | Listar usuarios, editar el perfil y cambiar roles |
 
-**Campos del producto que usa la UI:** `id`, `name`, `description`, `price`, `finalPrice`, `discountPercentage`, `stock`, `categoryName`, `sellerUsername`, `imageIds`.
+Todas las solicitudes que no son `GET` arman sus opciones en una constante `options` (`method`, `headers` con `Content-Type` y `Authorization: Bearer <token>`, y `body` con `JSON.stringify`).
 
-**Body de login:**
-```json
-{ "email": "usuario-o-email", "password": "..." }
-```
-
-**Body de registro:**
-```json
-{
-  "username": "...",
-  "name": "...",
-  "surname": "...",
-  "email": "...",
-  "password": "...",
-  "role": "BUYER"
-}
-```
-
-> El backend tiene que permitir **CORS** desde `http://localhost:5173` para que el navegador acepte las respuestas.
+### Manejo de errores
+Cada pantalla guarda el error en un estado (arranca en `null`) y lo muestra en pantalla. El mensaje sale, en este orden, de:
+1. el campo `message` que manda el backend;
+2. un texto propio de esa acción, si el backend no manda ninguno (por ejemplo, un 403 sin cuerpo);
+3. un aviso general en español si el servidor no responde.
 
 ---
 
-## Estado actual y pendientes
+## Qué necesita el backend
 
-- [ ] **Sesión / token:** `App.jsx` pasa `onLogin={login}` a Login y Register, pero la función `login` (y el estado del token) todavía no está definida. Falta definir dónde guardar el token y pasarle `token` y `onLogout` al `Navbar`.
-- [ ] **Carrito:** la ruta `/cart` no existe y el contador del Navbar está hardcodeado.
-- [ ] **Agregar al carrito:** `ProductCard` y `ProductDetail` ya soportan un `onAdd`, pero ningún padre se lo pasa todavía.
-- [ ] **Páginas faltantes:** `/how-to-buy` y `/contact`.
-- [ ] **Buscador del Navbar:** es visual, todavía no filtra (el que funciona es el del catálogo).
-- [ ] **Banner del Home:** guarda la página completa en vez del primer producto (`data.content[0]`), por eso siempre muestra la silueta.
-- [ ] **URL del backend:** centralizarla (por ejemplo con una variable de entorno `VITE_API_URL`) en lugar de repetirla en cada componente.
+- **CORS** permitido desde `http://localhost:5173`.
+- **`GET /categories` público** (sin sesión), para que el catálogo se pueda filtrar por categoría sin iniciar sesión. Crear, modificar y borrar categorías sigue siendo solo del administrador.
+- **`spring.web.error.include-message=always`** en el `application.properties`, para que el front muestre los mensajes de error del backend.
+- **Límite de archivos:** `spring.servlet.multipart.max-file-size=10MB` y `spring.servlet.multipart.max-request-size=30MB`, para poder subir fotos de más de 1 MB.
+- **La base `marketplace` creada** en MySQL antes de arrancar, y `spring.jpa.hibernate.ddl-auto=update` para conservar los datos entre reinicios.
+
+---
+
+## Decisiones y limitaciones conocidas
+
+- **Eliminar una publicación es una baja lógica:** la figura se desactiva, sale del catálogo y de los carritos, pero se conserva para no romper el historial de compras. Su nombre queda ocupado. El vendedor puede volver a publicarla desde *Publicaciones eliminadas*.
+- **Sesión vencida:** el token dura 24 horas. Si vence y el usuario intenta una acción que la requiere, Spring Security responde "Access Denied" en inglés. Se soluciona volviendo a iniciar sesión.
+- **Fotos de un producto:** se suben todas juntas, por lo que el orden en que quedan guardadas puede variar. La primera guardada es la que se ve en el catálogo.
+- **Nombres de figuras:** el backend rechaza un nombre que ya usa otra figura (incluidas las eliminadas). El panel avisa antes si coincide con otra de tus figuras.
+- **URL del backend:** se mantiene como constante en cada componente, igual que en la clase.
+- **Idioma del HTML:** `index.html` mantiene `lang="en"`.

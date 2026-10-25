@@ -144,6 +144,7 @@
 .seller-item-header {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 1em;
 }
 
@@ -165,7 +166,8 @@
 }
 
 .seller-item-title-box {
-    flex: 1;
+    flex: 1 1 8em;
+    min-width: 0;
 }
 
 .seller-item-name {
@@ -240,4 +242,43 @@
 .inactive-card {
     border-style: dashed;
     opacity: 0.75;
+}
+
+.seller-hint {
+    font-size: 0.8em;
+    opacity: 0.75;
+    overflow-wrap: anywhere;   
+}
+
+.seller-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+    width: 100%;
+    padding: 0 0 0.5em 0;
+    border: none;
+    border-bottom: 0.15em solid white;
+    background: none;
+    color: white;
+    font-size: 1.5em;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-align: left;
+    cursor: pointer;
+    flex-wrap: wrap;           
+}
+
+.seller-toggle span:last-child {
+    font-size: 0.5em;
+    white-space: nowrap;
+}
+
+.seller-toggle:hover {
+    opacity: 0.75;
+}
+
+.seller-toggle:focus-visible {
+    outline: 0.15em solid white;
+    outline-offset: 0.2em;
 }

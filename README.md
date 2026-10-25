@@ -34,7 +34,7 @@ El proyecto de React está dentro de la carpeta `marketplace/`.
 ```bash
 # 1. Clonar el repositorio
 git clone <url-del-repo>
-cd TPO-APIS-FRONTEND/marketplace
+cd Frontend/marketplace
 
 # 2. Instalar dependencias
 npm install

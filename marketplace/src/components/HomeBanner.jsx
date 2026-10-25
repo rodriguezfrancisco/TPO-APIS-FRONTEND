@@ -51,7 +51,7 @@ const HomeBanner = () => {
 
                     <div className="banner-text-box">
                         <p>
-                            Figuras y Peluches de Shuumatsu no Valkyrie, JoJo, Umamusume más. Elegí la que te falta y armá tu pedido.
+                            Figuras de Shuumatsu no Valkyrie, JoJo y más. Elegí la que te falta y armá tu pedido.
                         </p>
                     </div>
 

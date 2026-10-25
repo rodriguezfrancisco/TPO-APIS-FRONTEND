@@ -7,7 +7,9 @@ const IMAGE_URL = `${URL}/images/view/`;
 
 const getUsernameFromToken = (token) => {
     try {
-        return JSON.parse(atob(token.split('.')[1])).sub;
+        const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+        return JSON.parse(new TextDecoder().decode(bytes)).sub;
     } catch {
         return null;
     }
@@ -30,11 +32,13 @@ const SellerPanel = () => {
     const [discountPercentage, setDiscountPercentage] = useState(0);
     const [categoryId, setCategoryId] = useState('');
     const [files, setFiles] = useState([]);
+    const [fileInputKey, setFileInputKey] = useState(0);
 
     const [newCategoryName, setNewCategoryName] = useState('');
     const [feedback, setFeedback] = useState(null);
     const [error, setError] = useState(null);
     const [submitting, setSubmitting] = useState(false);
+    const [showInactive, setShowInactive] = useState(false);
 
     useEffect(() => {
         if (!token) {
@@ -143,6 +147,7 @@ const SellerPanel = () => {
             setStock('');
             setDiscountPercentage(0);
             setFiles([]);
+            setFileInputKey(fileInputKey + 1);
 
             // Si adjuntó fotos, las subimos todas juntas a POST /images (cada una devuelve null si salió bien o su mensaje de error)
             const uploadPromises = Array.from(files).map((file) => {
@@ -185,6 +190,12 @@ const SellerPanel = () => {
     const handleUpdateProduct = (productId, updatedFields) => {
         setError(null);
         setFeedback(null);
+
+        const sameName = myProducts.find((p) => p.id !== productId && p.name.toLowerCase() === updatedFields.name.toLowerCase());
+        if (sameName) {
+            setError(`Ya tenés otra figura llamada "${sameName.name}". Elegí un nombre distinto.`);
+            return;
+        }
         const options = {
             method: 'PATCH',
             headers: {
@@ -249,7 +260,19 @@ const SellerPanel = () => {
     const activeProducts = myProducts.filter((p) => p.state !== false);
     const inactiveProducts = myProducts.filter((p) => p.state === false);
 
-    if (!loading && currentUser && currentUser.role === 'BUYER') {
+    if (loading || !currentUser) {
+        return (
+            <section className="seller-wrapper">
+                <div className="seller-container">
+                    <p className="seller-message">
+                        {loading ? 'Cargando panel...' : (error || 'No pudimos identificar tu cuenta. Volvé a iniciar sesión.')}
+                    </p>
+                </div>
+            </section>
+        );
+    }
+
+    if (currentUser.role === 'BUYER') {
         return (
             <section className="seller-wrapper">
                 <div className="seller-container">
@@ -372,6 +395,7 @@ const SellerPanel = () => {
                                 Fotos del producto (una o más)
                             </label>
                             <input
+                                key={fileInputKey}
                                 id="prod-files"
                                 type="file"
                                 accept="image/*"
@@ -379,6 +403,14 @@ const SellerPanel = () => {
                                 className="seller-field"
                                 onChange={(e) => setFiles(e.target.files)}
                             />
+                            <p className="seller-hint">
+                                Para elegir varias fotos, mantené Ctrl (o Shift) apretado mientras las seleccionás en la misma ventana.
+                           </p>
+                            {files.length > 0 && (
+                                <p className="seller-hint">
+                                    {files.length} {files.length === 1 ? 'foto elegida' : 'fotos elegidas'}: {Array.from(files).map((file) => file.name).join(', ')}
+                                </p>
+                            )}
 
                             <button
                                 type="submit"
@@ -412,11 +444,19 @@ const SellerPanel = () => {
                         )}
 
                         {/* Sección de Publicaciones Eliminadas para reactivar en 1 clic */}
-                        {inactiveProducts.length > 0 && (
-                            <>
-                                <h3 className="seller-subtitle">
-                                    Publicaciones eliminadas ({inactiveProducts.length})
-                                </h3>
+                        <button
+                            type="button"
+                            className="seller-toggle"
+                            aria-expanded={showInactive}
+                            onClick={() => setShowInactive(!showInactive)}
+                        >
+                            <span>Publicaciones eliminadas ({inactiveProducts.length})</span>
+                            <span>{showInactive ? '▲ Ocultar' : '▼ Mostrar'}</span>
+                        </button>
+                        {showInactive && (
+                            inactiveProducts.length === 0 ? (
+                                <p className="seller-message">Todavía no eliminaste ninguna figura.</p>
+                            ) : (
                                 <div className="seller-products-list">
                                     {inactiveProducts.map((prod) => (
                                         <SellerProductRow
@@ -427,10 +467,9 @@ const SellerPanel = () => {
                                         />
                                     ))}
                                 </div>
-                            </>
+                            )
                         )}
                     </div>
-
                 </div>
             </div>
         </section>

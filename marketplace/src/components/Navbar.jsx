@@ -8,7 +8,9 @@ const URL = 'http://localhost:8080';
 // Función para extraer el usuario (subject) del payload del JWT
 const getUsernameFromToken = (token) => {
     try {
-        return JSON.parse(atob(token.split('.')[1])).sub;
+         const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+         const bytes = Uint8Array.from(atob(payloadBase64), (c) => c.charCodeAt(0));
+         const payload = JSON.parse(new TextDecoder().decode(bytes));
     } catch {
         return null;
     }
@@ -25,9 +27,9 @@ const Navbar = ({ token, onLogout }) => {
     
     const [isCartOpen, setIsCartOpen] = useState(false);
 
-    // Es true si el usuario logueado es administrador (así se muestra el link de Administración)
-    const [isAdmin, setIsAdmin] = useState(false);
-
+    // Rol del usuario logueado (BUYER, SELLER o ADMIN): decide qué links se muestran en el menú
+    const [role, setRole] = useState(null);
+    
     // 1. Etapa de montaje / cambio de usuario: traemos el carrito con GET una sola vez
     useEffect(() => {
         if (!token) {
@@ -45,9 +47,10 @@ const Navbar = ({ token, onLogout }) => {
         .catch((error) => console.error("Error al cargar el carrito: ", error));
     }, [token]);
 
-    // Buscamos al usuario logueado en GET /users para saber si es administrador
+    // Buscamos al usuario logueado en GET /users para saber su rol (vendedor, administrador o comprador)
     useEffect(() => {
         if (!token) {
+            setRole(null);
             return;
         }
 
@@ -59,7 +62,7 @@ const Navbar = ({ token, onLogout }) => {
             const sub = getUsernameFromToken(token);
             const list = data && data.content ? data.content : [];
             const me = list.find((u) => u.username === sub || u.email === sub);
-            setIsAdmin(me !== undefined && me.role === 'ADMIN');
+            setRole(me !== undefined ? me.role : null);
         })
         .catch((error) => console.error("Error al cargar el rol: ", error));
     }, [token]);
@@ -138,9 +141,9 @@ const Navbar = ({ token, onLogout }) => {
                     
                     <div className="nav-links">
                         <Link to="/products" className="nav-link">Productos</Link>
-                        {token && <Link to="/sell" className="nav-link">Vender</Link>}
+                        {token && (role === 'SELLER' || role === 'ADMIN') && <Link to="/sell" className="nav-link">Vender</Link>}
                         {token && <Link to="/profile" className="nav-link">Mi Perfil</Link>}
-                        {token && isAdmin && <Link to="/admin" className="nav-link">Admin</Link>}
+                        {token && role === 'ADMIN' && <Link to="/admin" className="nav-link">Admin</Link>}
                         <Link to="/how-to-buy" className="nav-link">Cómo comprar</Link>
                         <Link to="/contact" className="nav-link">Contacto</Link>
                     </div>

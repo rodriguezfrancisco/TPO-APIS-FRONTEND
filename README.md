@@ -54,8 +54,6 @@ La app queda disponible en **http://localhost:5173**.
 | `npm run dev` | Levanta el servidor de desarrollo con recarga en caliente |
 | `npm run lint` | Corre ESLint sobre el proyecto |
 
-> **Sobre el build de producción:** no forma parte de lo que se evalúa en este proyecto, y `npm run build` falla por una incompatibilidad entre las versiones de daisyUI (5) y Tailwind (3) que trae el proyecto. Si hiciera falta generarlo, se puede con `npx vite build --minify false`.
-
 ---
 
 ## Estructura del proyecto

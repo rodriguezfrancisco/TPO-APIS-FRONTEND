@@ -214,4 +214,3 @@ Cada pantalla guarda el error en un estado (arranca en `null`) y lo muestra en p
 - **Fotos de un producto:** se suben todas juntas, por lo que el orden en que quedan guardadas puede variar. La primera guardada es la que se ve en el catálogo.
 - **Nombres de figuras:** el backend rechaza un nombre que ya usa otra figura (incluidas las eliminadas). El panel avisa antes si coincide con otra de tus figuras.
 - **URL del backend:** se mantiene como constante en cada componente, igual que en la clase.
-- **Idioma del HTML:** `index.html` mantiene `lang="en"`.

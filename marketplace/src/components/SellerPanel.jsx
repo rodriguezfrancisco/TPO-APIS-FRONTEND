@@ -312,7 +312,7 @@ const SellerPanel = () => {
                                 </button>
                             </form>
                         )}
-
+                        
                         <form className="seller-form" onSubmit={handleCreateProduct}>
                             <label className="seller-label" htmlFor="prod-name">Nombre de la figura</label>
                             <input

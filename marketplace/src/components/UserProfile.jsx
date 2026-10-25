@@ -40,6 +40,7 @@ const UserProfile = ({ onLogin }) => {
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
     const [password, setPassword] = useState('');
 
     // Etapa de montaje: cargamos los datos del usuario y su historial de órdenes
@@ -110,6 +111,12 @@ const UserProfile = ({ onLogin }) => {
         };
 
         if (password.trim() !== '') {
+            if (currentPassword.trim() === '') {
+                setError('Debes ingresar tu contraseña actual para cambiarla.');
+                setSaving(false);
+                return;
+            }
+            bodyToSend.currentPassword = currentPassword;
             bodyToSend.password = password;
         }
         const options = {
@@ -132,6 +139,7 @@ const UserProfile = ({ onLogin }) => {
         .then((data) => {
             // Actualizamos el estado local con la respuesta del backend
             setUser(data.user);
+            setCurrentPassword('');
             setPassword('');
             setMessage('Perfil actualizado correctamente.');
 
@@ -216,6 +224,18 @@ const UserProfile = ({ onLogin }) => {
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
+
+                                <label className="profile-label" htmlFor="prof-curr-pass">
+                                    Contraseña actual (solo para cambiarla)
+                                </label>
+                                <input
+                                    id="prof-curr-pass"
+                                    type="password"
+                                    className="profile-input"
+                                    value={currentPassword}
+                                    onChange={(e) => setCurrentPassword(e.target.value)}
+                                />
+
 
                                 <label className="profile-label" htmlFor="prof-pass">
                                     Nueva contraseña (opcional)

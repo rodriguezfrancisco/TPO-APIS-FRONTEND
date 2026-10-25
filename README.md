@@ -149,6 +149,7 @@ Galería con miniaturas, categoría, precio con descuento, stock, descripción y
 
 ### Panel del vendedor (`SellerPanel`)
 - **Publicar** una figura con nombre, categoría, precio, stock, descuento, descripción y **una o más fotos** (hay que elegirlas juntas en la misma ventana con Ctrl o Shift).
+- **Fotos de un producto:** se suben de a una, en el orden en que se eligieron. La primera es la que se ve en el catálogo.
 - **Modificar** nombre, descripción, precio, stock y descuento de cada publicación.
 - **Eliminar** una publicación (baja lógica) y **volver a publicarla** desde la sección plegable *Publicaciones eliminadas*.
 - El administrador además puede **crear categorías**.
@@ -209,6 +210,4 @@ Cada pantalla guarda el error en un estado (arranca en `null`) y lo muestra en p
 
 - **Eliminar una publicación es una baja lógica:** la figura se desactiva, sale del catálogo y de los carritos, pero se conserva para no romper el historial de compras. Su nombre queda ocupado. El vendedor puede volver a publicarla desde *Publicaciones eliminadas*.
 - **Sesión vencida:** el token dura 24 horas. Si vence y el usuario intenta una acción que la requiere, Spring Security responde "Access Denied" en inglés. Se soluciona volviendo a iniciar sesión.
-- **Fotos de un producto:** se suben todas juntas, por lo que el orden en que quedan guardadas puede variar. La primera guardada es la que se ve en el catálogo.
 - **Nombres de figuras:** el backend rechaza un nombre que ya usa otra figura (incluidas las eliminadas). El panel avisa antes si coincide con otra de tus figuras.
-- **URL del backend:** se mantiene como constante en cada componente, igual que en la clase.

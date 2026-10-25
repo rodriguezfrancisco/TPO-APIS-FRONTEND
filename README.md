@@ -29,11 +29,10 @@ Frontend del **Marketplace** del TPO de Aplicaciones Interactivas (UADE). Es una
 
 ## Instalación y ejecución
 
-El proyecto de React está dentro de la carpeta `marketplace/`.
+El proyecto de React está dentro de `Frontend/marketplace/`. Desde la carpeta de la entrega:
 
 ```bash
-# 1. Clonar el repositorio
-git clone <url-del-repo>
+# 1. Ir a la carpeta del frontend
 cd Frontend/marketplace
 
 # 2. Instalar dependencias

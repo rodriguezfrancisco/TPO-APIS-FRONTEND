@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './HomeBanner.css';
 
+// URL base del backend
+const URL = 'http://localhost:8080';
+
 const HomeBanner = () => {
     const [featuredProduct, setFeaturedProduct] = useState(null);
 
     useEffect(() => {
-        fetch('http://localhost:8080/products?page=0&size=1')
+        fetch(`${URL}/products?page=0&size=1`)
         .then((response) => response.json())
         .then((data) => {
             // Guardamos el primer producto que viene adentro de "content"
@@ -22,7 +25,7 @@ const HomeBanner = () => {
     // Armamos la URL de la imagen nativa usando ImageController
     // Si el producto no tiene imagen, se puede poner la silueta del boceto de fallback
     const imageUrl = featuredProduct && featuredProduct.imageIds && featuredProduct.imageIds.length > 0 
-        ? `http://localhost:8080/images/view/${featuredProduct.imageIds[0]}`
+        ? `${URL}/images/view/${featuredProduct.imageIds[0]}`
         : null;
 
     return (
@@ -48,7 +51,7 @@ const HomeBanner = () => {
 
                     <div className="banner-text-box">
                         <p>
-                            Figuras de Shuumatsu no Valkyrie, JoJo y más. Elegí la que te falta y armá tu pedido.
+                            Figuras y Peluches de Shuumatsu no Valkyrie, JoJo, Umamusume más. Elegí la que te falta y armá tu pedido.
                         </p>
                     </div>
 

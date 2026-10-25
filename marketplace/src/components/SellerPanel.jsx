@@ -139,7 +139,7 @@ const SellerPanel = () => {
             return response.json();
         })
         .then(async (createdProduct) => {
-            // Agregamos el producto a la lista local y limpiamos el formulario
+            // Agregamos el producto a la lista con spread (sin otro GET) y limpiamos el formulario
             setMyProducts([...myProducts, createdProduct]);
             setName('');
             setDescription('');
@@ -149,35 +149,38 @@ const SellerPanel = () => {
             setFiles([]);
             setFileInputKey(fileInputKey + 1);
 
-            const imageErrors = [];
+            let imageErrors = [];
 
-            // Subimos las imágenes una por una para respetar estrictamente el orden
+            // Subimos las imágenes una por una para respetar el orden
             for (const file of Array.from(files)) {
                 const formData = new FormData();
                 formData.append('productId', createdProduct.id);
                 formData.append('name', file.name);
                 formData.append('file', file);
 
+                const options = {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${token}` },
+                    body: formData
+                };
+
                 try {
-                    const res = await fetch(`${URL}/images`, {
-                        method: 'POST',
-                        headers: { Authorization: `Bearer ${token}` },
-                        body: formData
-                    });
-                    
+                    const res = await fetch(`${URL}/images`, options);
+
                     if (!res.ok) {
                         const data = await res.json().catch(() => ({}));
-                        imageErrors.push(data.message || `No se pudo subir la imagen ${file.name}.`);
+                        const msg = data.message || `No se pudo subir la imagen ${file.name}.`;
+                        imageErrors = [...imageErrors, msg];
                     }
-                } catch (err) {
-                    imageErrors.push(`No se pudo subir la imagen ${file.name}.`);
+                } catch {
+                    imageErrors = [...imageErrors, `No se pudo subir la imagen ${file.name}.`];
                 }
             }
 
             if (imageErrors.length > 0) {
                 throw new Error(`La figura se publicó, pero hubo errores con las imágenes: ${imageErrors.join(' ')}`);
             }
-            
+
             setFeedback('¡Figura publicada con éxito!');
         })
         .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))

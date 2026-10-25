@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
 import './ProductCard.css';
 
+// URL base del backend
+const URL = 'http://localhost:8080';
+
 // URL base para ver las imágenes que guarda el backend
-const IMAGE_URL = 'http://localhost:8080/images/view/';
+const IMAGE_URL = `${URL}/images/view/`;
 
 // Convierte un número en pesos argentinos (ej: 159900 -> $ 159.900)
 const formatPrice = (price) => {

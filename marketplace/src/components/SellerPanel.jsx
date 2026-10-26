@@ -450,7 +450,7 @@ const SellerPanel = () => {
                             aria-expanded={showInactive}
                             onClick={() => setShowInactive(!showInactive)}
                         >
-                            <span>Publicaciones eliminadas ({inactiveProducts.length})</span>
+                            <span>Publicaciones desactivadas ({inactiveProducts.length})</span>
                             <span>{showInactive ? '▲ Ocultar' : '▼ Mostrar'}</span>
                         </button>
                         {showInactive && (
@@ -539,7 +539,7 @@ const SellerProductRow = ({ product, onUpdate, onDelete }) => {
                         className="seller-btn-danger"
                         onClick={() => onDelete(product.id)}
                     >
-                        Eliminar
+                        Desactivar
                     </button>
                 )}
             </div>

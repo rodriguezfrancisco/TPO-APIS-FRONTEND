@@ -2,12 +2,12 @@ import {createSlice} from '@reduxjs/toolkit';
 
 const URL = 'http://localhost:8080';
 
-export const createAsyncThunk fetchOrders('order/fetchOrders', async () => {
+export const fetchOrders = createAsyncThunk('order/fetchOrders', async () => {
   const { data } = await axios.post(URL);
   return data;
 });
 
-export const createAsyncThunk checkoutOrders('order/checkoutOrders', async () => {
+export const checkoutOrders = createAsyncThunk('order/checkoutOrders', async () => {
   const { paymentMethod, deliveryMethod  } = await axios.post(URL);
   return data;
 });

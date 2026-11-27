@@ -2,11 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from "axios";
 import { checkoutOrders } from './orderSlice';
 import { logout } from './userSlice';
-
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import axios from "axios";
-import { checkoutOrders } from './orderSlice';
-import { logout } from './userSlice';
+import { disableProduct } from './productSlice';
 
 const URL = 'http://localhost:8080';
 
@@ -114,6 +110,14 @@ const cartSlice = createSlice({
      .addCase(logout, (state) => {
         state.items = [];
         state.total = 0;
+     })
+     // Si el vendedor pausa un producto que tenía en su carrito, se saca
+     .addCase(disableProduct.fulfilled, (state, action) => {
+        const item = state.items.find((i) => i.productId === action.payload);
+        if (item) {
+          state.total = state.total - item.subtotal;
+          state.items = state.items.filter((i) => i.productId !== action.payload);
+        }
      })
   }
 

@@ -12,20 +12,18 @@ import NotFound from './views/NotFound';
 import HowToBuy from './views/HowToBuy';
 import Contact from './views/Contact';
 
-import useLoginToken from './components/UseLoginToken';
-
 function App() {
   return (
     <>
-      <Navbar token={token} onLogout={logout} />
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/products" element={<Products token={token} />} />
+        <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<Product />} />
-        <Route path="/login" element={<Login onLogin={login} />} />
-        <Route path="/register" element={<Register onLogin={login} />} />
-        <Route path="/profile" element={<Profile onLogin={login} />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/sell" element={<Sell />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/how-to-buy" element={<HowToBuy />} />

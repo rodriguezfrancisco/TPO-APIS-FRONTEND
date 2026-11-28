@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart, removeOneFromCart, removeFromCart } from './Redux/cartSlice';
+import { checkoutOrders } from './Redux/orderSlice';
 import './CartModal.css';
 
 const URL = 'http://localhost:8080';
@@ -13,8 +16,15 @@ const formatPrice = (price) => {
     }).format(price || 0);
 };
 
-const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
+const CartModal = ({ isOpen, onClose }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    // Estados globales desde Redux
+    const { token } = useSelector((state) => state.user);
+    const { items, total, loading: cartLoading, error: cartError } = useSelector((state) => state.cart);
+    const { loading: orderLoading, error: orderError } = useSelector((state) => state.order);
+    const { items: products, selected: selectedProduct } = useSelector((state) => state.product);
 
     // Paso actual del modal: 1 (Carrito), 2 (Tus datos), 3 (Listo)
     const [step, setStep] = useState(1);
@@ -23,144 +33,68 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
     const [paymentMethod, setPaymentMethod] = useState('Tarjeta de crédito / débito');
     const [deliveryMethod, setDeliveryMethod] = useState('Envío a domicilio gratis');
 
-    // Orden generada al confirmar en el Paso 3
+    // Orden generada al confirmar en el Paso 3 y control para mostrar errores solo de la acción actual
     const [completedOrder, setCompletedOrder] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [actionAttempted, setActionAttempted] = useState(false);
 
     if (!isOpen) return null;
 
-    const items = cart?.items || [];
-    const total = cart?.total || 0;
+    const loading = cartLoading || orderLoading;
+    const error = actionAttempted ? (step === 2 ? orderError : cartError) : null;
 
-    // Recalcula el total localmente para no hacer un GET extra al backend
-    const updateLocalCart = (updatedItems) => {
-        const newTotal = updatedItems.reduce((acc, item) => acc + item.subtotal, 0);
-        setCart({ ...cart, items: updatedItems, total: newTotal });
+    // Busca la miniatura en los productos cargados en Redux 
+    const getProductImageId = (productId) => {
+        const foundInCatalog = products.find((p) => p.id === productId);
+        if (foundInCatalog?.imageIds?.length > 0) return foundInCatalog.imageIds[0];
+        if (selectedProduct?.id === productId && selectedProduct?.imageIds?.length > 0) {
+            return selectedProduct.imageIds[0];
+        }
+        return null;
     };
 
     // Sumar 1 unidad (+)
     const handleIncrease = (item) => {
-        setLoading(true);
-        setError(null);
-        const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({ productId: item.productId, quantity: 1 })
-        };
-        fetch(`${URL}/cartItems`, options)
-        .then((res) => {
-            if (!res.ok) {
-                return res.json()
-                .catch(() => ({}))
-                .then((data) => { throw new Error(data.message || 'No hay más stock disponible de esta figura.'); });
-            }
-            return res.json();
-        })
-        .then((updatedCart) => setCart(updatedCart))
-        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
-        .finally(() => setLoading(false));
+        setActionAttempted(true);
+        dispatch(addToCart({ token, productId: item.productId, quantity: 1 }));
     };
 
     // Restar 1 unidad (-)
     const handleDecrease = (item) => {
-        setLoading(true);
-        setError(null);
-        const options = {
-            method: 'DELETE',
-            headers: { Authorization: `Bearer ${token}` }
-        };
-        fetch(`${URL}/cartItems/product/one/${item.productId}`, options)
-        .then((res) => {
-            if (!res.ok) {
-                return res.json()
-                .catch(() => ({}))
-                .then((data) => { throw new Error(data.message || 'Error al descontar unidad.'); });
-            }
-            return res.json();
-        })
-        .then(() => {
-            const updatedItems = items
-                .map((i) =>
-                    i.productId === item.productId
-                        ? { ...i, quantity: i.quantity - 1, subtotal: (i.quantity - 1) * i.unitPrice }
-                        : i
-                )
-                .filter((i) => i.quantity > 0);
-            updateLocalCart(updatedItems);
-        })
-        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
-        .finally(() => setLoading(false));
+        setActionAttempted(true);
+        dispatch(removeOneFromCart({ token, productId: item.productId }));
     };
 
     // Quitar producto completo del carrito
     const handleRemove = (productId) => {
-        setLoading(true);
-        setError(null);
-        const options = {
-            method: 'DELETE',
-            headers: { Authorization: `Bearer ${token}` }
-        };
-        fetch(`${URL}/cartItems/product/${productId}`, options)
-        .then((res) => {
-            if (!res.ok) {
-                return res.json()
-                .catch(() => ({}))
-                .then((data) => { throw new Error(data.message || 'Error al quitar la figura.'); });
-            }
-            return res.json();
-        })
-        .then(() => {
-            const updatedItems = items.filter((i) => i.productId !== productId);
-            updateLocalCart(updatedItems);
-        })
-        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
-        .finally(() => setLoading(false));
+        setActionAttempted(true);
+        dispatch(removeFromCart({ token, productId }));
     };
 
-    const handleCheckout = (e) => {
+    // Confirmar compra (POST /orders/checkout)
+    const handleCheckout = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError(null);
-        const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({ paymentMethod, deliveryMethod })
-        };
-        fetch(`${URL}/orders/checkout`, options)
-        .then((res) => {
-            if (!res.ok) {
-                return res.json()
-                .catch(() => ({}))
-                .then((data) => { throw new Error(data.message || 'No se pudo procesar la compra. Revisá el stock disponible.'); });
-            }
-            return res.json();
-        })
-        .then((orderData) => {
-            setCompletedOrder(orderData);
-            setCart({ ...cart, items: [], total: 0 });
+        setActionAttempted(true);
+
+        const result = await dispatch(checkoutOrders({ token, paymentMethod, deliveryMethod }));
+
+        if (checkoutOrders.fulfilled.match(result)) {
+            setCompletedOrder(result.payload);
+            setActionAttempted(false);
             setStep(3);
-        })
-        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
-        .finally(() => setLoading(false));
+        }
     };
 
     const handleCloseModal = () => {
         setStep(1);
-        setError(null);
+        setActionAttempted(false);
+        setCompletedOrder(null);
         onClose();
     };
 
     return (
         <div className="cart-overlay" onClick={handleCloseModal}>
             <div className="cart-modal" onClick={(e) => e.stopPropagation()}>
-                
+
                 {/* 1. Cabecera */}
                 <div className="cart-header">
                     <h2 className="cart-title">Tu carrito</h2>
@@ -224,8 +158,7 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
                                 {/* Lista de productos */}
                                 <div className="cart-items-list">
                                     {items.map((item) => {
-                                        const savedImages = JSON.parse(localStorage.getItem('cartImages') || '{}');
-                                        const imageId = savedImages[item.productId];
+                                        const imageId = getProductImageId(item.productId);
                                         return (
                                             <div key={item.id || item.productId} className="cart-item">
                                                 <div className="cart-item-img-box">
@@ -314,7 +247,10 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
                                         type="button"
                                         className="cart-btn-primary"
                                         disabled={loading}
-                                        onClick={() => setStep(2)}
+                                        onClick={() => {
+                                            setActionAttempted(false);
+                                            setStep(2);
+                                        }}
                                     >
                                         Continuar
                                     </button>
@@ -364,7 +300,10 @@ const CartModal = ({ isOpen, onClose, cart, setCart, token }) => {
                                 type="button"
                                 className="cart-btn-secondary"
                                 disabled={loading}
-                                onClick={() => setStep(1)}
+                                onClick={() => {
+                                    setActionAttempted(false);
+                                    setStep(1);
+                                }}
                             >
                                 Volver
                             </button>

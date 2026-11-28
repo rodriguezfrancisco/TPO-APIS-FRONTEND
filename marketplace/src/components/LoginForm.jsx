@@ -1,51 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import './LoginForm.css';
 
-// URL base del backend
-const URL = 'http://localhost:8080';
-
-const LoginForm = ({ onLogin }) => {
-    // Sirve para cambiar de página por código (al iniciar sesión volvemos al catálogo)
+const LoginForm = () => {
     const navigate = useNavigate();
-    // Lo que se va escribiendo en cada campo
+    const dispatch = useDispatch();
+    
+    // Solo manejamos localmente lo que el usuario tipea
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    // Mientras es true el botón queda deshabilitado
-    const [loading, setLoading] = useState(false);
-    // Pasa a true si falla el inicio de sesión
-    const [error, setError] = useState(null);
+    
+    // Traemos los estados globales desde Redux
+    const { loading, error, token } = useSelector((state) => state.user);
 
-    // Se ejecuta al enviar el formulario (con Enter o con el botón)
-    const handleSubmit = (e) => {
-        // Evita que el formulario recargue la página
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
-        // El backend acepta tanto el email como el nombre de usuario en el campo email
-        const options = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email.trim(), password: password })
-        };
-        fetch(`${URL}/api/v1/auth/login`, options)
-        .then((response)=> response.json())
-        .then((data)=>{
-            // Si no vuelve el token (datos incorrectos o error del servidor) saltamos al catch
-            if (!data.accessToken) {
-                // Con datos incorrectos el backend solo responde 403 (Forbidden): ahí avisamos nosotros
-                throw new Error(data.status === 403 || !data.message ? 'Usuario o contraseña incorrectos.' : data.message);
-            }
-            onLogin(data.accessToken);
+    // Redirigir automáticamente si el token se actualiza (login exitoso)
+    useEffect(() => {
+        if (token) {
             navigate('/products');
-        })
-        .catch((error)=>{
-            console.error("Error al iniciar sesion: ", error);
-            // Si el error lo lanzamos nosotros (trae el mensaje del backend) lo mostramos; si no (servidor caído), uno general
-            setError(error.name === 'Error' ? error.message : 'No pudimos iniciar sesión. Revisá tus datos y que el servidor esté activo.');
-        })
-        // finally se ejecuta siempre, haya salido bien o mal
-        .finally(()=> setLoading(false));
+        }
+    }, [token, navigate]);
+
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Despachamos la acción asíncrona enviando las credenciales
+        dispatch(loginUser({ email: email.trim(), password }));
     };
 
     return (
@@ -78,7 +58,7 @@ const LoginForm = ({ onLogin }) => {
                         onChange={(e) => setPassword(e.target.value)}
                     />
 
-                    {/* 3. Mensaje de error */}
+                    {/* 3. Mensaje de error. Ahora viene directo de Redux */}
                     {error && <p className="login-error" role="alert">{error}</p>}
 
                     {/* 4. Botón de envío */}

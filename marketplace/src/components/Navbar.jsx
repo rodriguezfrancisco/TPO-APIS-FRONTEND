@@ -1,43 +1,45 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom'; // Agregamos useNavigate
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout, fetchUsers } from './Redux/userSlice';
 import CartModal from './CartModal';
 import './Navbar.css';
 
 const URL = 'http://localhost:8080';
 
-// Función para extraer el usuario (subject) del payload del JWT
-const getUsernameFromToken = (token) => {
-    try {
-         const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-         const bytes = Uint8Array.from(atob(payloadBase64), (c) => c.charCodeAt(0));
-         const payload = JSON.parse(new TextDecoder().decode(bytes));
-         return payload.sub;
-    } catch {
-        return null;
-    }
-};
-
-const Navbar = ({ token, onLogout }) => {
+const Navbar = () => {
     const location = useLocation();
-    const navigate = useNavigate(); 
-
-    // Estado para guardar lo que el usuario escribe en la barra
-    const [searchTerm, setSearchTerm] = useState('');
-
-    const [cart, setCart] = useState({ items: [], total: 0 });
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     
+    // 1. Nos suscribimos al estado global de usuario
+    const { token, currentUser } = useSelector((state) => state.user);
+    const role = currentUser?.role; // Extraemos el rol directamente
+
+    // Estados locales (el carrito lo migraremos a Redux más adelante)
+    const [searchTerm, setSearchTerm] = useState('');
+    const [cart, setCart] = useState({ items: [], total: 0 });
     const [isCartOpen, setIsCartOpen] = useState(false);
 
-    // Rol del usuario logueado (BUYER, SELLER o ADMIN): decide qué links se muestran en el menú
-    const [role, setRole] = useState(null);
-    
-    // 1. Etapa de montaje / cambio de usuario: traemos el carrito con GET una sola vez
+    // 2. Si hay token pero no tenemos los datos del usuario (ej: al recargar la página con F5), los pedimos
+    useEffect(() => {
+        if (token && !currentUser) {
+            dispatch(fetchUsers());
+        }
+    }, [token, currentUser, dispatch]);
+
+    // 3. Función de Cerrar Sesión usando Redux
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate('/home');
+    };
+
+    // --- LÓGICA TEMPORAL DEL CARRITO (Hasta que creemos el cartSlice) ---
     useEffect(() => {
         if (!token) {
             setCart({ items: [], total: 0 });
             return;
         }
-
         fetch(`${URL}/carts`, {
             headers: { Authorization: `Bearer ${token}` }
         })
@@ -48,27 +50,6 @@ const Navbar = ({ token, onLogout }) => {
         .catch((error) => console.error("Error al cargar el carrito: ", error));
     }, [token]);
 
-    // Buscamos al usuario logueado en GET /users para saber su rol (vendedor, administrador o comprador)
-    useEffect(() => {
-        if (!token) {
-            setRole(null);
-            return;
-        }
-
-        fetch(`${URL}/users`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-        .then((response) => (response.ok ? response.json() : null))
-        .then((data) => {
-            const sub = getUsernameFromToken(token);
-            const list = data && data.content ? data.content : [];
-            const me = list.find((u) => u.username === sub || u.email === sub);
-            setRole(me !== undefined ? me.role : null);
-        })
-        .catch((error) => console.error("Error al cargar el rol: ", error));
-    }, [token]);
-
-    // 2. Recibimos actualizaciones de carrito o productos eliminados sin hacer otro GET
     useEffect(() => {
         if (location.state?.updatedCart) {
             setCart(location.state.updatedCart);
@@ -87,34 +68,30 @@ const Navbar = ({ token, onLogout }) => {
         }
     }, [location.state]);
 
-// Función que se ejecuta al apretar Enter en el buscador
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         if (searchTerm.trim() !== '') {
-            // Navegamos al catálogo pasándole la palabra clave oculta en el estado
             navigate('/products', { state: { searchKeyword: searchTerm.trim() } });
-            setSearchTerm(''); // Limpiamos la barra después de buscar
+            setSearchTerm('');
         }
     };
 
     const cartItemsCount = (cart?.items || []).reduce((acc, item) => acc + item.quantity, 0);
-
     const handleCartChange = (newCart) => {
-    setCart(newCart);
-    navigate(location.pathname, {
-        replace: true,
-        state: { updatedCart: newCart, timestamp: Date.now() }
-    });
-};
+        setCart(newCart);
+        navigate(location.pathname, {
+            replace: true,
+            state: { updatedCart: newCart, timestamp: Date.now() }
+        });
+    };
+
     return (
         <>
             <nav className="navbar bg-black text-white custom-navbar">
-                
-                {/* 1. Sección Izquierda (Logo) */}
                 <div className="nav-section justify-start">
                     <Link to="/home" className="logo-link">
                         <div className="logo-box">
-                            <span>ゴ</span>
+                            <span>G</span>
                         </div>
                         <div className="logo-text">
                             <span className="logo-title">Gogogo</span>
@@ -122,10 +99,8 @@ const Navbar = ({ token, onLogout }) => {
                         </div>
                     </Link>
                 </div>
-
-                {/* 2. Sección Centro (Buscador) */}
+                
                 <div className="nav-section justify-center hide-on-mobile">
-                    {/* Lo envolvemos en un form para escuchar el evento onSubmit (Enter) */}
                     <form onSubmit={handleSearchSubmit} className="w-full max-w-lg">
                         <input 
                             type="text" 
@@ -136,10 +111,8 @@ const Navbar = ({ token, onLogout }) => {
                         />
                     </form>
                 </div>
-
-                {/* 3. Sección Derecha (Navegación y Carrito) */}
+                
                 <div className="nav-section justify-end gap-links">
-                    
                     <div className="nav-links">
                         <Link to="/products" className="nav-link">Productos</Link>
                         {token && (role === 'SELLER' || role === 'ADMIN') && <Link to="/sell" className="nav-link">Vender</Link>}
@@ -148,18 +121,17 @@ const Navbar = ({ token, onLogout }) => {
                         <Link to="/how-to-buy" className="nav-link">Cómo comprar</Link>
                         <Link to="/contact" className="nav-link">Contacto</Link>
                     </div>
-
+                    
                     {token ? (
-                        <button type="button" className="auth-btn" onClick={onLogout}>Cerrar sesión</button>
+                        <button type="button" className="auth-btn" onClick={handleLogout}>Cerrar sesión</button>
                     ) : (
                         <Link to="/login" className="auth-btn">Ingresar</Link>
                     )}
-
-                    {/* Botón que abre el modal del carrito */}
+                    
                     <div className="cart-container">
-                        <button
-                            type="button"
-                            className="btn bg-white text-black cart-btn"
+                        <button 
+                            type="button" 
+                            className="btn bg-white text-black cart-btn" 
                             onClick={() => setIsCartOpen(true)}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="cart-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -176,14 +148,13 @@ const Navbar = ({ token, onLogout }) => {
                     </div>
                 </div>
             </nav>
-
-            {/* Modal del carrito controlado por la Navbar */}
-            <CartModal
-                isOpen={isCartOpen}
-                onClose={() => setIsCartOpen(false)}
-                cart={cart}
-                setCart={handleCartChange}
-                token={token}
+            
+            <CartModal 
+                isOpen={isCartOpen} 
+                onClose={() => setIsCartOpen(false)} 
+                cart={cart} 
+                setCart={handleCartChange} 
+                token={token} 
             />
         </>
     );

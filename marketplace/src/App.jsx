@@ -15,8 +15,6 @@ import Contact from './views/Contact';
 import useLoginToken from './components/UseLoginToken';
 
 function App() {
-  const { token, login, logout } = useLoginToken();
-  
   return (
     <>
       <Navbar token={token} onLogout={logout} />

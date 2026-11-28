@@ -1,30 +1,34 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers } from './Redux/userSlice';
+import { fetchCategories, createCategory } from './Redux/categorySlice';
+import {
+    fetchSellerProducts,
+    createProduct,
+    uploadProductImage,
+    updateProduct,
+    disableProduct
+} from './Redux/productSlice';
 import './SellerPanel.css';
 
 const URL = 'http://localhost:8080';
 const IMAGE_URL = `${URL}/images/view/`;
 
-const getUsernameFromToken = (token) => {
-    try {
-        const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-        const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-        return JSON.parse(new TextDecoder().decode(bytes)).sub;
-    } catch {
-        return null;
-    }
-};
-
 const SellerPanel = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const token = localStorage.getItem('jwtToken');
+    const dispatch = useDispatch();
 
-    const [currentUser, setCurrentUser] = useState(null);
-    const [categories, setCategories] = useState([]);
-    const [myProducts, setMyProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // Estados globales desde Redux
+    const { token, currentUser, loading: userLoading } = useSelector((state) => state.user);
+    const { items: categories, error: categoryError } = useSelector((state) => state.category);
+    const {
+        sellerItems: myProducts,
+        loading: productLoading,
+        error: productError
+    } = useSelector((state) => state.product);
 
+    // Estados locales del formulario de alta
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
@@ -34,83 +38,66 @@ const SellerPanel = () => {
     const [files, setFiles] = useState([]);
     const [fileInputKey, setFileInputKey] = useState(0);
 
+    // Estados locales de UI y feedback
     const [newCategoryName, setNewCategoryName] = useState('');
     const [feedback, setFeedback] = useState(null);
-    const [error, setError] = useState(null);
+    const [localError, setLocalError] = useState(null);
     const [submitting, setSubmitting] = useState(false);
     const [showInactive, setShowInactive] = useState(false);
+    const [sellerLoaded, setSellerLoaded] = useState(false);
+    const [lastAction, setLastAction] = useState(null);
 
+    // Etapa de montaje: verificamos sesión, perfil, categorías y publicaciones del vendedor
     useEffect(() => {
         if (!token) {
             navigate('/login');
             return;
         }
+        if (!currentUser) {
+            dispatch(fetchUsers(token));
+        }
+        if (categories.length === 0) {
+            dispatch(fetchCategories());
+        }
+        if (currentUser && currentUser.role !== 'BUYER' && !sellerLoaded) {
+            dispatch(fetchSellerProducts(token));
+            setSellerLoaded(true);
+        }
+    }, [token, currentUser, categories.length, sellerLoaded, dispatch, navigate]);
 
-        const sub = getUsernameFromToken(token);
+    // Selecciona la primera categoría disponible cuando se cargan
+    useEffect(() => {
+        if (categories.length > 0 && !categoryId) {
+            setCategoryId(categories[0].id);
+        }
+    }, [categories, categoryId]);
 
-        Promise.all([
-            fetch(`${URL}/users`, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json()),
-            fetch(`${URL}/categories`, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json()),
-            fetch(`${URL}/products/seller`, { headers: { Authorization: `Bearer ${token}` } }).then((r) => r.json())
-        ])
-        .then(([usersData, categoriesData, sellerProductsData]) => {
-            const foundUser = (usersData.content || []).find(
-                (u) => u.username === sub || u.email === sub
-            );
-            setCurrentUser(foundUser);
-
-            const catList = categoriesData.content || [];
-            setCategories(catList);
-            if (catList.length > 0) {
-                setCategoryId(catList[0].id);
-            }
-
-            if (Array.isArray(sellerProductsData)) {
-                setMyProducts(sellerProductsData);
-            }
-        })
-        .catch((err) => {
-            console.error('Error al cargar panel de vendedor:', err);
-            setError('Error al cargar los datos del panel.');
-        })
-        .finally(() => setLoading(false));
-    }, [token, navigate]);
-
-    const handleCreateCategory = (e) => {
+    const handleCreateCategory = async (e) => {
         e.preventDefault();
         if (!newCategoryName.trim()) return;
-        const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({ description: newCategoryName.trim() })
-        };
-        fetch(`${URL}/categories`, options)
-        .then((res) => {
-            if (!res.ok) {
-                // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
-                return res.json()
-                .catch(() => ({}))
-                .then((data) => { throw new Error(data.message || 'La categoría ya existe o no tenés permisos.'); });
-            }
-            return res.json();
-        })
-        .then((createdCat) => {
-            setCategories([...categories, createdCat]);
+        setLocalError(null);
+        setFeedback(null);
+        setLastAction('category');
+
+        const result = await dispatch(createCategory({
+            token,
+            description: newCategoryName.trim()
+        }));
+
+        if (createCategory.fulfilled.match(result)) {
+            const createdCat = result.payload;
             setCategoryId(createdCat.id);
             setNewCategoryName('');
             setFeedback(`Categoría "${createdCat.description}" creada.`);
-        })
-        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'));
+        }
     };
 
-    const handleCreateProduct = (e) => {
+    const handleCreateProduct = async (e) => {
         e.preventDefault();
         setSubmitting(true);
-        setError(null);
+        setLocalError(null);
         setFeedback(null);
+        setLastAction('product');
 
         const productPayload = {
             name: name.trim(),
@@ -120,152 +107,99 @@ const SellerPanel = () => {
             discount_percentage: Number(discountPercentage) || 0,
             id_category: Number(categoryId)
         };
-        const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(productPayload)
-        };
-        fetch(`${URL}/products`, options)
-        .then((response) => {
-            if (!response.ok) {
-                // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
-                return response.json()
-                .catch(() => ({}))
-                .then((data) => { throw new Error(data.message || 'Ya existe una figura con ese nombre (revisá tus publicaciones pausadas).'); });
-            }
-            return response.json();
-        })
-        .then(async (createdProduct) => {
-            // Agregamos el producto a la lista con spread (sin otro GET) y limpiamos el formulario
-            setMyProducts([...myProducts, createdProduct]);
+
+        const result = await dispatch(createProduct({ token, product: productPayload }));
+
+        if (createProduct.fulfilled.match(result)) {
+            const createdProduct = result.payload;
+            const selectedFiles = Array.from(files);
+
+            // Limpiamos el formulario
             setName('');
             setDescription('');
             setPrice('');
             setStock('');
             setDiscountPercentage(0);
             setFiles([]);
-            setFileInputKey(fileInputKey + 1);
+            setFileInputKey((prev) => prev + 1);
 
             let imageErrors = [];
 
-            // Subimos las imágenes una por una para respetar el orden
-            for (const file of Array.from(files)) {
-                const formData = new FormData();
-                formData.append('productId', createdProduct.id);
-                formData.append('name', file.name);
-                formData.append('file', file);
-
-                const options = {
-                    method: 'POST',
-                    headers: { Authorization: `Bearer ${token}` },
-                    body: formData
-                };
-
-                try {
-                    const res = await fetch(`${URL}/images`, options);
-
-                    if (!res.ok) {
-                        const data = await res.json().catch(() => ({}));
-                        const msg = data.message || `No se pudo subir la imagen ${file.name}.`;
-                        imageErrors = [...imageErrors, msg];
-                    }
-                } catch {
+            // Subimos las imágenes una por una mediante Redux para respetar el orden
+            for (const file of selectedFiles) {
+                const imgResult = await dispatch(uploadProductImage({
+                    token,
+                    productId: createdProduct.id,
+                    file
+                }));
+                if (uploadProductImage.rejected.match(imgResult)) {
                     imageErrors = [...imageErrors, `No se pudo subir la imagen ${file.name}.`];
                 }
             }
 
             if (imageErrors.length > 0) {
-                throw new Error(`La figura se publicó, pero hubo errores con las imágenes: ${imageErrors.join(' ')}`);
+                setLocalError(`La figura se publicó, pero hubo errores con las imágenes: ${imageErrors.join(' ')}`);
+            } else {
+                setFeedback('¡Figura publicada con éxito!');
             }
+        }
 
-            setFeedback('¡Figura publicada con éxito!');
-        })
-        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
-        .finally(() => setSubmitting(false));
+        setSubmitting(false);
     };
 
-    const handleUpdateProduct = (productId, updatedFields) => {
-        setError(null);
+    const handleUpdateProduct = async (productId, updatedFields) => {
+        setLocalError(null);
         setFeedback(null);
 
-        const sameName = myProducts.find((p) => p.id !== productId && p.name.toLowerCase() === updatedFields.name.toLowerCase());
+        const sameName = myProducts.find(
+            (p) => p.id !== productId && p.name.toLowerCase() === updatedFields.name.toLowerCase()
+        );
         if (sameName) {
-            setError(`Ya tenés otra figura llamada "${sameName.name}". Elegí un nombre distinto.`);
+            setLocalError(`Ya tenés otra figura llamada "${sameName.name}". Elegí un nombre distinto.`);
             return;
         }
-        const options = {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(updatedFields)
-        };
-        fetch(`${URL}/products/${productId}`, options)
-        .then((res) => {
-            if (!res.ok) {
-                // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
-                return res.json()
-                .catch(() => ({}))
-                .then((data) => { throw new Error(data.message || 'No se pudo actualizar el producto.'); });
-            }
-            return res.json();
-        })
-        .then((updatedProduct) => {
-            setMyProducts(
-                myProducts.map((p) => (p.id === productId ? updatedProduct : p))
-            );
+
+        setLastAction('product');
+        const result = await dispatch(updateProduct({
+            token,
+            id: productId,
+            changes: updatedFields
+        }));
+
+        if (updateProduct.fulfilled.match(result)) {
+            const updatedProduct = result.payload;
             setFeedback(
                 updatedFields.state === true
                     ? `"${updatedProduct.name}" volvió a publicarse en el catálogo.`
                     : `"${updatedProduct.name}" actualizado.`
             );
-        })
-        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'));
+        }
     };
 
-    const handleDisableProduct = (productId) => {
-        setError(null);
+    const handleDisableProduct = async (productId) => {
+        setLocalError(null);
         setFeedback(null);
-        const options = {
-            method: 'PUT',
-            headers: { Authorization: `Bearer ${token}` }
-        };
-        fetch(`${URL}/products/${productId}`, options)
-        .then((res) => {
-            if (!res.ok) {
-                // Leemos el mensaje que mandó el backend (si el cuerpo no es un JSON, usamos un objeto vacío)
-                return res.json()
-                .catch(() => ({}))
-                .then((data) => { throw new Error(data.message || 'No se pudo pausar la publicación.'); });
-            }
-            // Marcamos state: false localmente con .map() sin hacer otro GET
-            setMyProducts(
-                myProducts.map((p) => (p.id === productId ? { ...p, state: false } : p))
-            );
-            setFeedback('Publicación pausada y retirada de los carritos.');
+        setLastAction('product');
 
-            // Avisamos a la Navbar por si el mismo usuario la tenía en su carrito
-            navigate(location.pathname, {
-                replace: true,
-                state: { removedProductId: productId, timestamp: Date.now() }
-            });
-        })
-        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'));
+        const result = await dispatch(disableProduct({ token, id: productId }));
+
+        if (disableProduct.fulfilled.match(result)) {
+            setFeedback('Publicación pausada y retirada de los carritos.');
+        }
     };
 
     const activeProducts = myProducts.filter((p) => p.state !== false);
     const inactiveProducts = myProducts.filter((p) => p.state === false);
 
-    if (loading || !currentUser) {
+    const reduxError = lastAction === 'category' ? categoryError : lastAction === 'product' ? productError : null;
+    const errorMessage = localError || reduxError;
+
+    if (userLoading || !currentUser) {
         return (
             <section className="seller-wrapper">
                 <div className="seller-container">
                     <p className="seller-message">
-                        {loading ? 'Cargando panel...' : (error || 'No pudimos identificar tu cuenta. Volvé a iniciar sesión.')}
+                        {userLoading ? 'Cargando panel...' : 'No pudimos identificar tu cuenta. Volvé a iniciar sesión.'}
                     </p>
                 </div>
             </section>
@@ -289,11 +223,11 @@ const SellerPanel = () => {
             <div className="seller-container">
                 <h2 className="seller-title">Panel de Vendedor</h2>
 
-                {error && <p className="seller-error-box">{error}</p>}
+                {errorMessage && <p className="seller-error-box">{errorMessage}</p>}
                 {feedback && <p className="seller-success-box">{feedback}</p>}
 
                 <div className="seller-grid">
-                    
+
                     {/* Columna 1: Formulario de Alta */}
                     <div className="seller-box">
                         <h3 className="seller-subtitle">Publicar nueva figura</h3>
@@ -405,7 +339,7 @@ const SellerPanel = () => {
                             />
                             <p className="seller-hint">
                                 Para elegir varias fotos, mantené Ctrl (o Shift) apretado mientras las seleccionás en la misma ventana.
-                           </p>
+                            </p>
                             {files.length > 0 && (
                                 <p className="seller-hint">
                                     {files.length} {files.length === 1 ? 'foto elegida' : 'fotos elegidas'}: {Array.from(files).map((file) => file.name).join(', ')}
@@ -422,13 +356,15 @@ const SellerPanel = () => {
                         </form>
                     </div>
 
-                    {/* Columna 2: Publicaciones Activas y Eliminadas/Pausadas */}
+                    {/* Columna 2: Publicaciones Activas y Desactivadas */}
                     <div className="seller-box">
                         <h3 className="seller-subtitle">
                             Publicaciones activas ({activeProducts.length})
                         </h3>
 
-                        {activeProducts.length === 0 ? (
+                        {productLoading && myProducts.length === 0 ? (
+                            <p className="seller-message">Cargando publicaciones...</p>
+                        ) : activeProducts.length === 0 ? (
                             <p className="seller-message">No tenés figuras activas en este momento.</p>
                         ) : (
                             <div className="seller-products-list">
@@ -443,7 +379,6 @@ const SellerPanel = () => {
                             </div>
                         )}
 
-                        {/* Sección de Publicaciones Eliminadas para reactivar en 1 clic */}
                         <button
                             type="button"
                             className="seller-toggle"

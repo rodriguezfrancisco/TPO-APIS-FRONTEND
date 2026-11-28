@@ -1,8 +1,8 @@
 import RegisterForm from "../components/RegisterForm";
 
-function Register({ onLogin }) {
+function Register() {
   return (
-    <RegisterForm onLogin={onLogin}></RegisterForm>
+    <RegisterForm></RegisterForm>
   )
 }
 

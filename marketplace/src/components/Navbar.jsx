@@ -91,7 +91,7 @@ const Navbar = () => {
                 <div className="nav-section justify-start">
                     <Link to="/home" className="logo-link">
                         <div className="logo-box">
-                            <span>G</span>
+                            <span>ゴ</span>
                         </div>
                         <div className="logo-text">
                             <span className="logo-title">Gogogo</span>

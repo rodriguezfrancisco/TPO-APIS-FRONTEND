@@ -1,20 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers, updateUser } from './Redux/userSlice';
+import { fetchOrders } from './Redux/orderSlice';
 import './UserProfile.css';
-
-const URL = 'http://localhost:8080';
-
-// Función para extraer el usuario (subject) del payload del JWT
-const getUsernameFromToken = (token) => {
-    try {
-        const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-        const bytes = Uint8Array.from(atob(payloadBase64), (c) => c.charCodeAt(0));
-        const payload = JSON.parse(new TextDecoder().decode(bytes));
-        return payload.sub;
-    } catch {
-        return null;
-    }
-};
 
 const formatPrice = (price) => {
     return new Intl.NumberFormat('es-AR', {
@@ -24,16 +13,16 @@ const formatPrice = (price) => {
     }).format(price || 0);
 };
 
-const UserProfile = ({ onLogin }) => {
+const UserProfile = () => {
     const navigate = useNavigate();
-    const token = localStorage.getItem('jwtToken');
+    const dispatch = useDispatch();
 
-    const [user, setUser] = useState(null);
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [message, setMessage] = useState(null);
-    const [error, setError] = useState(null);
+    // Estados globales desde Redux
+    const { token, currentUser, loading, error } = useSelector((state) => state.user);
+    const { items: orders } = useSelector((state) => state.order);
+
+    // Por si el backend devuelve 204 (sin contenido) al no tener compras todavía
+    const orderList = Array.isArray(orders) ? orders : [];
 
     // Estados locales del formulario
     const [username, setUsername] = useState('');
@@ -43,67 +32,45 @@ const UserProfile = ({ onLogin }) => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [password, setPassword] = useState('');
 
-    // Etapa de montaje: cargamos los datos del usuario y su historial de órdenes
+    // Mensajes de feedback/validación y control para no repetir el GET de órdenes al editar
+    const [validationError, setValidationError] = useState(null);
+    const [message, setMessage] = useState(null);
+    const [ordersLoaded, setOrdersLoaded] = useState(false);
+
+    // Etapa de montaje: verificamos sesión y traemos perfil (si falta) y órdenes una sola vez
     useEffect(() => {
         if (!token) {
             navigate('/login');
             return;
         }
+        if (!currentUser) {
+            dispatch(fetchUsers(token));
+        }
+        if (!ordersLoaded) {
+            dispatch(fetchOrders(token));
+            setOrdersLoaded(true);
+        }
+    }, [token, currentUser, ordersLoaded, dispatch, navigate]);
 
-        const currentSub = getUsernameFromToken(token);
+    // Sincronizamos los inputs con los datos actuales del usuario en Redux
+    useEffect(() => {
+        if (currentUser) {
+            setUsername(currentUser.username || '');
+            setName(currentUser.name || '');
+            setSurname(currentUser.surname || '');
+            setEmail(currentUser.email || '');
+        }
+    }, [currentUser]);
 
-        fetch(`${URL}/users`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-        .then((response) => response.json())
-        .then((data) => {
-            const list = data.content || [];
-            const foundUser = list.find(
-                (u) => u.username === currentSub || u.email === currentSub
-            );
-
-            if (!foundUser) {
-                throw new Error('No se encontró el perfil del usuario.');
-            }
-
-            setUser(foundUser);
-            setUsername(foundUser.username);
-            setName(foundUser.name);
-            setSurname(foundUser.surname);
-            setEmail(foundUser.email);
-        })
-        .catch((err) => {
-            console.error('Error al cargar perfil:', err);
-            setError('No pudimos cargar los datos de tu perfil.');
-        })
-        .finally(() => setLoading(false));
-
-        // Cargamos las órdenes del usuario
-        fetch(`${URL}/orders`, {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-        .then((response) => {
-            if (response.status === 204) return [];
-            return response.ok ? response.json() : [];
-        })
-        .then((ordersData) => {
-            if (Array.isArray(ordersData)) {
-                setOrders(ordersData);
-            }
-        })
-        .catch((err) => console.error('Error al cargar órdenes:', err));
-    }, [token, navigate]);
-
-    // Etapa de actualización: PATCH sin hacer GET posterior
-    const handleUpdateProfile = (e) => {
+    // Etapa de actualización: PATCH mediante Redux
+    const handleUpdateProfile = async (e) => {
         e.preventDefault();
-        if (!user) return;
+        if (!currentUser) return;
 
-        setSaving(true);
-        setError(null);
+        setValidationError(null);
         setMessage(null);
 
-        const bodyToSend = {
+        const changes = {
             username: username.trim(),
             name: name.trim(),
             surname: surname.trim(),
@@ -112,73 +79,50 @@ const UserProfile = ({ onLogin }) => {
 
         if (password.trim() !== '') {
             if (currentPassword.trim() === '') {
-                setError('Debes ingresar tu contraseña actual para cambiarla.');
-                setSaving(false);
+                setValidationError('Debés ingresar tu contraseña actual para cambiarla.');
                 return;
             }
             if (password.length < 8) {
-                setError('La nueva contraseña debe tener al menos 8 caracteres.');
-                setSaving(false);
+                setValidationError('La nueva contraseña debe tener al menos 8 caracteres.');
                 return;
             }
-            bodyToSend.currentPassword = currentPassword;
-            bodyToSend.password = password;
+            changes.currentPassword = currentPassword;
+            changes.password = password;
         }
-        const options = {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(bodyToSend)
-        };
-        fetch(`${URL}/users/${user.id}`, options)
-        .then((response) => {
-             if (!response.ok) {
-                return response.json()
-                .catch(() => ({}))
-                .then((data) => { throw new Error(data.message || 'El usuario o email ya está en uso.'); });
-            }
-            return response.json();
-        })
-        .then((data) => {
-            // Actualizamos el estado local con la respuesta del backend
-            setUser(data.user);
+
+        const result = await dispatch(updateUser({ token, id: currentUser.id, changes }));
+
+        if (updateUser.fulfilled.match(result)) {
             setCurrentPassword('');
             setPassword('');
             setMessage('Perfil actualizado correctamente.');
-
-            // Actualizamos el token en App/localStorage porque el backend genera uno nuevo
-            if (data.accessToken && onLogin) {
-                onLogin(data.accessToken);
-            }
-        })
-        .catch((err) => setError(err.name === 'Error' ? err.message : 'No pudimos completar la acción. Revisá que el servidor esté activo y que tu sesión siga iniciada.'))
-        .finally(() => setSaving(false));
+        }
     };
+
+    const errorMessage = validationError || error;
 
     return (
         <section className="profile-wrapper">
             <div className="profile-container">
                 <h2 className="profile-main-title">Mi Perfil</h2>
 
-                {loading && <p className="profile-status-box">Cargando perfil...</p>}
-                {!loading && error && !user && <p className="profile-status-box">{error}</p>}
+                {loading && !currentUser && <p className="profile-status-box">Cargando perfil...</p>}
+                {!loading && error && !currentUser && <p className="profile-status-box">{error}</p>}
 
-                {!loading && user && (
+                {currentUser && (
                     <div className="profile-grid">
-                        
+
                         {/* Columna Izquierda: Datos y edición */}
                         <div className="profile-card">
                             <div className="profile-header">
                                 <div className="profile-avatar">ゴ</div>
                                 <div>
-                                    <h3 className="profile-username">@{user.username}</h3>
-                                    <span className="profile-role-badge">{user.role}</span>
+                                    <h3 className="profile-username">@{currentUser.username}</h3>
+                                    <span className="profile-role-badge">{currentUser.role}</span>
                                 </div>
                             </div>
 
-                            {(user.role === 'SELLER' || user.role === 'ADMIN') && (
+                            {(currentUser.role === 'SELLER' || currentUser.role === 'ADMIN') && (
                                 <Link to="/sell" className="profile-seller-cta">
                                     Ir a mi Panel de Vendedor →
                                 </Link>
@@ -241,7 +185,6 @@ const UserProfile = ({ onLogin }) => {
                                     onChange={(e) => setCurrentPassword(e.target.value)}
                                 />
 
-
                                 <label className="profile-label" htmlFor="prof-pass">
                                     Nueva contraseña (opcional)
                                 </label>
@@ -254,11 +197,11 @@ const UserProfile = ({ onLogin }) => {
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
 
-                                {error && <p className="profile-status-box">{error}</p>}
+                                {errorMessage && <p className="profile-status-box">{errorMessage}</p>}
                                 {message && <p className="profile-success-box">{message}</p>}
 
-                                <button type="submit" className="profile-btn" disabled={saving}>
-                                    {saving ? 'Guardando...' : 'Guardar cambios'}
+                                <button type="submit" className="profile-btn" disabled={loading}>
+                                    {loading ? 'Guardando...' : 'Guardar cambios'}
                                 </button>
                             </form>
                         </div>
@@ -266,11 +209,11 @@ const UserProfile = ({ onLogin }) => {
                         {/* Columna Derecha: Historial de compras */}
                         <div className="profile-card">
                             <h3 className="profile-section-title">Mis Compras</h3>
-                            {orders.length === 0 ? (
+                            {orderList.length === 0 ? (
                                 <p className="profile-status-box">Todavía no realizaste ninguna compra.</p>
                             ) : (
                                 <div className="profile-orders-list">
-                                    {orders.map((order) => (
+                                    {orderList.map((order) => (
                                         <div key={order.id} className="profile-order-item">
                                             <div className="profile-order-top">
                                                 <span className="profile-order-id">Orden #{order.id}</span>

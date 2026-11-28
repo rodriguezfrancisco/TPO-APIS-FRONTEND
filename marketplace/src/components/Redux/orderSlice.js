@@ -7,7 +7,7 @@ export const fetchOrders = createAsyncThunk('order/fetchOrders', async (token) =
   const { data } = await axios.get(URL, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  return data;
+  return Array.isArray(data) ? data : [];
 });
 
 export const checkoutOrders = createAsyncThunk('order/checkoutOrders', async (orderData) => {

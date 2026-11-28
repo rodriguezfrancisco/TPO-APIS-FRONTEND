@@ -1,77 +1,64 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from './Redux/userSlice';
 import './LoginForm.css';
 import './RegisterForm.css';
 
-// URL base del backend
-const URL = 'http://localhost:8080';
-
-const RegisterForm = ({ onLogin }) => {
-    // Sirve para cambiar de página por código (al registrarse volvemos al catálogo)
+const RegisterForm = () => {
     const navigate = useNavigate();
-    // Lo que se va escribiendo en cada campo
+    const dispatch = useDispatch();
+
+    // Estado global desde Redux
+    const { token, loading, error } = useSelector((state) => state.user);
+
+    // Estados locales de los inputs del formulario
     const [username, setUsername] = useState('');
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    // Tipo de cuenta: BUYER (comprador) o SELLER (vendedor)
     const [role, setRole] = useState('BUYER');
-    // Mientras es true el botón queda deshabilitado
-    const [loading, setLoading] = useState(false);
-    // Mensaje de error que se muestra (null si no hay ninguno)
-    const [error, setError] = useState(null);
 
-    // Se ejecuta al enviar el formulario (con Enter o con el botón)
+    // Error de validación local y bandera para saber si se envió este formulario
+    const [validationError, setValidationError] = useState(null);
+    const [submitted, setSubmitted] = useState(false);
+
+    // Si el registro fue exitoso, el token se carga en Redux y redirigimos al catálogo
+    useEffect(() => {
+        if (token) {
+            navigate('/products');
+        }
+    }, [token, navigate]);
+
     const handleSubmit = (e) => {
-        // Evita que el formulario recargue la página
         e.preventDefault();
 
-        // La contraseña tiene que tener al menos 8 caracteres (el backend también lo valida)
         if (password.length < 8) {
-            setError('La contraseña debe tener al menos 8 caracteres.');
+            setValidationError('La contraseña debe tener al menos 8 caracteres.');
             return;
         }
-        
-        // Las contraseñas se comparan acá, antes de enviar nada al backend
+
         if (password !== confirmPassword) {
-            setError('Las contraseñas no coinciden.');
+            setValidationError('Las contraseñas no coinciden.');
             return;
         }
-        setLoading(true);
-        setError(null);
-        const options = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: username.trim(),
-                name: name.trim(),
-                surname: surname.trim(),
-                email: email.trim(),
-                password: password,
-                role: role
-            })
-        };
-        fetch(`${URL}/api/v1/auth/register`, options)
-        .then((response)=> response.json())
-        .then((data)=>{
-            if (!data.accessToken) {
-                // El backend responde 400 cuando el usuario o el email ya existen
-                throw new Error(data.message || 'No pudimos crear la cuenta. Revisá los datos e intentá de nuevo.');
-            }
-            // El registro ya devuelve el token: le pasamos a App para iniciar sesión y volvemos al catálogo
-            onLogin(data.accessToken);
-            navigate('/products');
-        })
-        .catch((error)=>{
-            console.error("Error al crear la cuenta: ", error);
-            // Si el error lo lanzamos nosotros (trae el mensaje del backend) lo mostramos; si no (servidor caído), uno general
-            setError(error.name === 'Error' ? error.message : 'No pudimos crear la cuenta. Revisá los datos y que el servidor esté activo.');
-        })
-        // finally se ejecuta siempre, haya salido bien o mal
-        .finally(()=> setLoading(false));
+
+        setValidationError(null);
+        setSubmitted(true);
+
+        dispatch(registerUser({
+            username: username.trim(),
+            name: name.trim(),
+            surname: surname.trim(),
+            email: email.trim(),
+            password,
+            role
+        }));
     };
+
+    const errorMessage = validationError || (submitted ? error : null);
 
     return (
         <section className="login-wrapper">
@@ -163,7 +150,7 @@ const RegisterForm = ({ onLogin }) => {
                     </select>
 
                     {/* 3. Mensaje de error */}
-                    {error && <p className="login-error" role="alert">{error}</p>}
+                    {errorMessage && <p className="login-error" role="alert">{errorMessage}</p>}
 
                     {/* 4. Botón de envío */}
                     <button type="submit" className="login-btn" disabled={loading}>

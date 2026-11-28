@@ -1,8 +1,8 @@
 import LoginForm from "../components/LoginForm";
 
-function Login({ onLogin }) {
+function Login() {
   return (
-    <LoginForm onLogin={onLogin}></LoginForm>
+    <LoginForm></LoginForm>
   )
 }
 
